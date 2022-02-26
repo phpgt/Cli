@@ -23,7 +23,7 @@ class ArgumentList implements Iterator {
 	}
 
 	public function getCommandName():string {
-		return $this->argumentList[0]->getValue();
+		return $this->argumentList[0]->getValue() ?? "";
 	}
 
 	/** @param string[] $arguments */
@@ -59,7 +59,7 @@ class ArgumentList implements Iterator {
 						strpos(
 							$arg,
 							"="
-						)
+						) ?: 0
 					);
 
 					$value = substr(
@@ -142,7 +142,7 @@ class ArgumentList implements Iterator {
 	/**
 	 * @link http://php.net/manual/en/iterator.rewind.php
 	 */
-	public function rewind() {
+	public function rewind():void {
 		$this->iteratorIndex = 0;
 	}
 

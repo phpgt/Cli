@@ -26,7 +26,7 @@ class ErrorCode {
 			$exception = get_class($exception);
 		}
 
-		return array_search(
+		return (int)array_search(
 			$exception,
 			self::$classList
 		) ?: self::DEFAULT_CODE;

@@ -9,7 +9,7 @@ use Gt\Cli\Parameter\Parameter;
 class VersionCommand extends Command {
 	public function run(ArgumentValueList $arguments = null):void {
 		$this->writeLine(
-			$this->getVersion($arguments->get(
+			$this->getVersion($arguments?->get(
 				"command"
 			)
 		));
@@ -45,6 +45,6 @@ class VersionCommand extends Command {
 
 	protected function getVersion(string $command = null):string {
 		$package = InstalledVersions::getRootPackage()["name"];
-		return InstalledVersions::getVersion($package);
+		return InstalledVersions::getVersion($package) ?? "";
 	}
 }
