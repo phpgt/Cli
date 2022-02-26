@@ -13,7 +13,7 @@ abstract class Argument {
 
 	public function __toString():string {
 		if(empty($this->key)) {
-			return $this->value;
+			return $this->value ?? "";
 		}
 		else {
 			return $this->key . ":" . $this->value;
