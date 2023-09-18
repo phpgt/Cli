@@ -18,6 +18,9 @@ class Application {
 	protected Stream $stream;
 	protected HelpCommand $helpCommand;
 	protected VersionCommand $versionCommand;
+	private int $exitCode;
+	/** @var callable */
+	private $exitHandler;
 
 	public function __construct(
 		string $description,
@@ -52,6 +55,10 @@ class Application {
 		$this->versionCommand->setStream($this->stream);
 	}
 
+	public function setExitHandler(callable $exitHandler):void {
+		$this->exitHandler = $exitHandler;
+	}
+
 	public function setStream(string $in, string $out, string $error):void {
 		$this->stream->setStream($in, $out, $error);
 	}
@@ -59,12 +66,16 @@ class Application {
 	public function run():void {
 		$command = null;
 		$exception = null;
+		$this->exitCode = 1;
 
 		if(is_null($this->arguments)) {
 			$this->stream->writeLine(
 				"Application has received no commands",
 				Stream::ERROR
 			);
+
+			$this->exitCode = 2;
+			$this->exit();
 			return;
 		}
 
@@ -98,6 +109,7 @@ class Application {
 				$this->arguments
 			);
 			$command->run($argumentValueList);
+			$this->exitCode = 0;
 		}
 		catch(MissingRequiredParameterException $exception) {
 			$message = "Error - Missing required parameter: "
@@ -121,6 +133,8 @@ class Application {
 				Stream::ERROR
 			);
 		}
+
+		$this->exit();
 	}
 
 	protected function findCommandByName(string $name):Command {
@@ -135,5 +149,14 @@ class Application {
 		}
 
 		throw new InvalidCommandException($name);
+	}
+
+	private function exit():void {
+		if(isset($this->exitHandler)) {
+			call_user_func($this->exitHandler, $this->exitCode);
+		}
+		elseif($this->exitCode !== 0) {
+			exit($this->exitCode);
+		}
 	}
 }

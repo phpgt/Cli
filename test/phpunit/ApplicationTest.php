@@ -3,13 +3,17 @@ namespace Gt\Cli\Test;
 
 use Gt\Cli\Application;
 use Gt\Cli\Argument\ArgumentList;
+use Gt\Cli\Argument\ArgumentValueList;
 use Gt\Cli\Argument\LongOptionArgument;
 use Gt\Cli\Argument\NamedArgument;
+use Gt\Cli\Argument\NotEnoughArgumentsException;
+use Gt\Cli\Command\Command;
+use Gt\Cli\Parameter\NamedParameter;
+use Gt\Cli\Parameter\Parameter;
 use Gt\Cli\Stream;
 use Gt\Cli\Test\Helper\ArgumentMockTestCase;
 use Gt\Cli\Test\Helper\Command\TestCommand;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
@@ -64,6 +68,7 @@ class ApplicationTest extends ArgumentMockTestCase {
 			$this->outPath,
 			$this->errPath
 		);
+		$application->setExitHandler(fn() => null);
 		$application->run();
 
 		self::assertStreamContains(
@@ -88,6 +93,7 @@ class ApplicationTest extends ArgumentMockTestCase {
 			$this->outPath,
 			$this->errPath
 		);
+		$application->setExitHandler(fn() => null);
 		$application->run();
 
 		self::assertStreamContains(
@@ -112,12 +118,17 @@ class ApplicationTest extends ArgumentMockTestCase {
 			$this->outPath,
 			$this->errPath
 		);
+		$actualErrCode = null;
+		$application->setExitHandler(function(int $errCode)use(&$actualErrCode) {
+			$actualErrCode = $errCode;
+		});
 		$application->run();
 
 		self::assertStreamContains(
 			"Usage: invalid-test",
 			Stream::ERROR
 		);
+		self::assertSame(1, $actualErrCode);
 	}
 
 	public function testCommandRun() {
@@ -182,6 +193,41 @@ class ApplicationTest extends ArgumentMockTestCase {
 			"No-value argument not set",
 			Stream::OUT
 		);
+	}
+
+	public function testExitCodeNotEnoughArtguments() {
+		$parameter = self::createMock(NamedParameter::class);
+		$argumentsList = self::createMock(ArgumentList::class);
+		$argumentsList->method("getCommandName")
+			->willReturn("example");
+		$command1 = new class($parameter) extends Command {
+			private array $unitTestRequiredParams;
+
+			public function __construct(Parameter...$requiredParams) {
+				$this->unitTestRequiredParams = $requiredParams;
+			}
+			public function run(ArgumentValueList $arguments = null):void {}
+			public function getName():string { return "example"; }
+			public function getDescription():string { return "Just an example"; }
+			public function getRequiredNamedParameterList():array {
+				return [
+					$this->unitTestRequiredParams[0],
+				];
+			}
+			public function getOptionalNamedParameterList():array { return []; }
+			public function getRequiredParameterList():array {
+				return [];
+			}
+
+			public function getOptionalParameterList():array { return []; }
+		};
+		$actualErrorCode = null;
+		$sut = new Application("Test app", $argumentsList, $command1);
+		$sut->setExitHandler(function(int $errorCode) use(&$actualErrorCode) {
+			$actualErrorCode = $errorCode;
+		});
+		$sut->run();
+		self::assertSame(1, $actualErrorCode);
 	}
 
 	protected function assertStreamContains(
