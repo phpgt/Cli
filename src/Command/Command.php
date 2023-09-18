@@ -284,7 +284,7 @@ abstract class Command {
 		string $message,
 		string $streamName = Stream::OUT
 	):void {
-		if(!isset($this->stream) || is_null($this->stream)) {
+		if(!isset($this->stream)) {
 			return;
 		}
 
