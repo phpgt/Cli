@@ -195,7 +195,7 @@ class ApplicationTest extends ArgumentMockTestCase {
 		);
 	}
 
-	public function testExitCodeNotEnoughArtguments() {
+	public function testExitCodeNotEnoughArguments() {
 		$parameter = self::createMock(NamedParameter::class);
 		$argumentsList = self::createMock(ArgumentList::class);
 		$argumentsList->method("getCommandName")
@@ -223,11 +223,17 @@ class ApplicationTest extends ArgumentMockTestCase {
 		};
 		$actualErrorCode = null;
 		$sut = new Application("Test app", $argumentsList, $command1);
+		$sut->setStream(
+			$this->inPath,
+			$this->outPath,
+			$this->errPath
+		);
 		$sut->setExitHandler(function(int $errorCode) use(&$actualErrorCode) {
 			$actualErrorCode = $errorCode;
 		});
 		$sut->run();
 		self::assertSame(1, $actualErrorCode);
+		self::assertStreamContains("Error: Not enough arguments passed. Passed: 0 required: 1.", Stream::ERROR);
 	}
 
 	protected function assertStreamContains(
