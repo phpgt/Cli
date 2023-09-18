@@ -42,6 +42,7 @@ jobs:
       - name: PHP Unit tests
         uses: php-actions/phpunit@v3
         with:
+          version: 9.6.12
           php_version: 8.0
           php_extensions: xdebug
           configuration: test/phpunit/phpunit.xml
