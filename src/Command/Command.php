@@ -14,6 +14,7 @@ use Gt\Cli\Parameter\Parameter;
 use Gt\Cli\Parameter\UserParameter;
 use Gt\Cli\Stream;
 
+/** @SuppressWarnings(PHPMD.ExcessiveClassComplexity) */
 abstract class Command {
 	protected ?Stream $stream;
 
@@ -40,129 +41,17 @@ abstract class Command {
 	abstract public function getOptionalParameterList():array;
 
 	public function getUsage(bool $includeDocumentation = false):string {
-		$message = "";
-
-		$message .= "Usage: ";
+		$message = "Usage: ";
 		$message .= $this->getName();
 
 		$documentation = [];
 
-		foreach($this->getRequiredNamedParameterList() as $parameter) {
-			$message .= " ";
-			$message .= $parameter->getOptionName();
-
-			$paramDocumentation = $parameter->getDocumentation();
-			if(!empty($paramDocumentation)) {
-				$documentation[$parameter->getOptionName()] =
-					$paramDocumentation;
-			}
-		}
-
-		foreach($this->getOptionalNamedParameterList() as $parameter) {
-			$message .= " [";
-			$message .= $parameter->getOptionName();
-			$message .= "]";
-
-			$paramDocumentation = $parameter->getDocumentation();
-			if(!empty($paramDocumentation)) {
-				$documentation[$parameter->getOptionName()] =
-					"(Optional) " . $paramDocumentation;
-			}
-		}
-
-		foreach($this->getRequiredParameterList() as $parameter) {
-			$message .= " --";
-			$message .= $parameter->getLongOption();
-
-			if($short = $parameter->getShortOption()) {
-				$message .= "|-$short";
-			}
-
-			if($parameter->takesValue()) {
-				$message .= " ";
-				$message .= $parameter->getExampleValue();
-			}
-
-			$paramDocumentation = $parameter->getDocumentation();
-			if(!empty($paramDocumentation)) {
-				$paramDocumentationKey = "--" . $parameter->getLongOption();
-				if($short) {
-					$paramDocumentationKey .= "|-" . $short;
-				}
-				$documentation[$paramDocumentationKey] =
-					$paramDocumentation;
-			}
-		}
-
-		foreach($this->getOptionalParameterList() as $parameter) {
-			$message .= " [--";
-			$message .= $parameter->getLongOption();
-
-			if($short = $parameter->getShortOption()) {
-				$message .= "|-$short";
-			}
-
-			if($parameter->takesValue()) {
-				$message .= " ";
-				$message .= $parameter->getExampleValue();
-			}
-
-			$message .= "]";
-
-			$paramDocumentation = $parameter->getDocumentation();
-			if(!empty($paramDocumentation)) {
-				$paramDocumentationKey = "--" . $parameter->getLongOption();
-				if($short) {
-					$paramDocumentationKey .= "|-" . $short;
-				}
-				$documentation[$paramDocumentationKey] =
-					"(Optional) " . $paramDocumentation;
-			}
-		}
-
-		if($includeDocumentation
-		&& !empty($documentation)) {
-			$message .= PHP_EOL;
-			$message .= PHP_EOL;
-
-			foreach($documentation as $key => $docString) {
-				$wrappedDocs = wordwrap($docString, 55);
-				$wrappedDocs = explode("\n", $wrappedDocs);
-				foreach($wrappedDocs as $i => $line) {
-					if($i === 0) {
-						continue;
-					}
-
-					$wrappedDocs[$i] = "\t\t\t" . $line;
-				}
-				$wrappedDocs = implode("\n", $wrappedDocs);
-
-				if(!strstr($key, "-")) {
-					$message .= str_repeat(" ", 6);
-					$message .= $key;
-					$message .= "\t\t";
-					$message .= $wrappedDocs;
-					$message .= PHP_EOL;
-				}
-				else {
-					$keyParts = explode("|", $key);
-					$message .= str_repeat(" ", 2);
-					if(isset($keyParts[1])) {
-						$message .= $keyParts[1];
-						$message .= ", ";
-					}
-
-					$message .= $keyParts[0];
-					if(!isset($keyParts[1])) {
-						$message .= str_repeat(" ", 3);
-					}
-
-					$message .= "\t\t";
-					$message .= $wrappedDocs;
-
-					$message .= PHP_EOL;
-				}
-			}
+		$this->appendUsageRequiredNamedParameterList($message, $documentation);
+		$this->appendUsageOptionalNamedParameterList($message, $documentation);
+		$this->appendUsageRequiredParameterList($message, $documentation);
+		$this->appendUsageOptionalParameterList($message, $documentation);
+		if($includeDocumentation && !empty($documentation)) {
+			$this->appendDocumentation($message, $documentation);
 		}
 
 		return $message;
@@ -176,7 +65,7 @@ abstract class Command {
 		$passedNamedArguments = 0;
 		foreach($argumentList as $argument) {
 			if($argument instanceof NamedArgument) {
-				$passedNamedArguments ++;
+				$passedNamedArguments++;
 			}
 		}
 
@@ -207,6 +96,7 @@ abstract class Command {
 		}
 	}
 
+	/** @SuppressWarnings(PHPMD.CyclomaticComplexity) */
 	public function getArgumentValueList(
 		ArgumentList $arguments
 	):ArgumentValueList {
@@ -260,7 +150,7 @@ abstract class Command {
 					|| $argumentKey === $parameterToCheck->getShortOption()) {
 						$parameter = $parameterToCheck;
 						break;
-					};
+					}
 				}
 
 				if(is_null($parameter)) {
@@ -311,5 +201,150 @@ abstract class Command {
 			$line = $this->stream->readLine();
 		}
 		return trim($line) ?: $default ?? "";
+	}
+
+	/** @param array<string, string> $documentation */
+	private function appendUsageRequiredNamedParameterList(
+		string &$message,
+		array &$documentation,
+	):void {
+		foreach($this->getRequiredNamedParameterList() as $parameter) {
+			$message .= " ";
+			$message .= $parameter->getOptionName();
+
+			$paramDocumentation = $parameter->getDocumentation();
+			if(!empty($paramDocumentation)) {
+				$documentation[$parameter->getOptionName()] =
+					$paramDocumentation;
+			}
+		}
+	}
+
+	/** @param array<string, string> $documentation */
+	private function appendUsageOptionalNamedParameterList(
+		string &$message,
+		array &$documentation,
+	):void {
+		foreach($this->getOptionalNamedParameterList() as $parameter) {
+			$message .= " [";
+			$message .= $parameter->getOptionName();
+			$message .= "]";
+
+			$paramDocumentation = $parameter->getDocumentation();
+			if(!empty($paramDocumentation)) {
+				$documentation[$parameter->getOptionName()] =
+					"(Optional) " . $paramDocumentation;
+			}
+		}
+	}
+
+	/** @param array<string, string> $documentation */
+	private function appendUsageRequiredParameterList(
+		string &$message,
+		array &$documentation,
+	):void {
+		foreach($this->getRequiredParameterList() as $parameter) {
+			$message .= " --";
+			$message .= $parameter->getLongOption();
+
+			if($short = $parameter->getShortOption()) {
+				$message .= "|-$short";
+			}
+
+			if($parameter->takesValue()) {
+				$message .= " ";
+				$message .= $parameter->getExampleValue();
+			}
+
+			$paramDocumentation = $parameter->getDocumentation();
+			if(!empty($paramDocumentation)) {
+				$paramDocumentationKey = "--" . $parameter->getLongOption();
+				if($short) {
+					$paramDocumentationKey .= "|-" . $short;
+				}
+				$documentation[$paramDocumentationKey] =
+					$paramDocumentation;
+			}
+		}
+	}
+
+	/** @param array<string, string> $documentation */
+	private function appendUsageOptionalParameterList(
+		string &$message,
+		array &$documentation,
+	):void {
+		foreach($this->getOptionalParameterList() as $parameter) {
+			$message .= " [--";
+			$message .= $parameter->getLongOption();
+
+			if($short = $parameter->getShortOption()) {
+				$message .= "|-$short";
+			}
+
+			if($parameter->takesValue()) {
+				$message .= " ";
+				$message .= $parameter->getExampleValue();
+			}
+
+			$message .= "]";
+
+			$paramDocumentation = $parameter->getDocumentation();
+			if(!empty($paramDocumentation)) {
+				$paramDocumentationKey = "--" . $parameter->getLongOption();
+				if($short) {
+					$paramDocumentationKey .= "|-" . $short;
+				}
+				$documentation[$paramDocumentationKey] =
+					"(Optional) " . $paramDocumentation;
+			}
+		}
+	}
+
+	/** @param array<string, string> $documentation */
+	private function appendDocumentation(
+		string &$message,
+		array &$documentation,
+	):void {
+		$message .= PHP_EOL;
+		$message .= PHP_EOL;
+
+		foreach($documentation as $key => $docString) {
+			$wrappedDocs = wordwrap($docString, 55);
+			$wrappedDocs = explode("\n", $wrappedDocs);
+			foreach($wrappedDocs as $i => $line) {
+				if($i === 0) {
+					continue;
+				}
+
+				$wrappedDocs[$i] = "\t\t\t" . $line;
+			}
+			$wrappedDocs = implode("\n", $wrappedDocs);
+
+			if(!strstr($key, "-")) {
+				$message .= str_repeat(" ", 6);
+				$message .= $key;
+				$message .= "\t\t";
+				$message .= $wrappedDocs;
+				$message .= PHP_EOL;
+			}
+			else {
+				$keyParts = explode("|", $key);
+				$message .= str_repeat(" ", 2);
+				if(isset($keyParts[1])) {
+					$message .= $keyParts[1];
+					$message .= ", ";
+				}
+
+				$message .= $keyParts[0];
+				if(!isset($keyParts[1])) {
+					$message .= str_repeat(" ", 3);
+				}
+
+				$message .= "\t\t";
+				$message .= $wrappedDocs;
+
+				$message .= PHP_EOL;
+			}
+		}
 	}
 }

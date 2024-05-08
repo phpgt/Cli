@@ -26,7 +26,10 @@ class ArgumentList implements Iterator {
 		return $this->argumentList[0]->getValue() ?? "";
 	}
 
-	/** @param string[] $arguments */
+	/**
+	 * @param string[] $arguments
+	 * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+	 */
 	protected function buildArgumentList(array $arguments):void {
 		if(isset($arguments[0])
 		&& $arguments[0][0] !== "-") {

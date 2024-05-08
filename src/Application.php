@@ -151,11 +151,13 @@ class Application {
 		throw new InvalidCommandException($name);
 	}
 
+	/** @SuppressWarnings(PHPMD.ExitExpression) */
 	private function exit():void {
 		if(isset($this->exitHandler)) {
 			call_user_func($this->exitHandler, $this->exitCode);
 		}
 		elseif($this->exitCode !== 0) {
+			// phpcs:ignore
 			exit($this->exitCode);
 		}
 	}
