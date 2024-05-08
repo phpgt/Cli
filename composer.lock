@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b22b91d4129dcf68bb568f4d968e0760",
+    "content-hash": "4cd0ca34afaa9ef7b6833e5d6a0cd4ce",
     "packages": [
         {
             "name": "phpgt/daemon",
@@ -2868,7 +2868,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.0",
+        "php": ">=8.2",
         "ext-json": "*",
         "ext-readline": "*"
     },
