@@ -19,7 +19,7 @@ class Application {
 	protected HelpCommand $helpCommand;
 	protected VersionCommand $versionCommand;
 	private int $exitCode;
-	/** @var callable */
+	/** @var ?callable */
 	private $exitHandler;
 
 	public function __construct(
