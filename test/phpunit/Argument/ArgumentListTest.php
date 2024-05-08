@@ -328,7 +328,7 @@ class ArgumentListTest extends TestCase {
 		self::assertTrue($argumentList->contains($param4));
 	}
 
-	public function data_randomNamedArgs():array {
+	public static function data_randomNamedArgs():array {
 		$dataSet = [];
 
 		for($i = 0; $i < 10; $i++) {
@@ -352,7 +352,7 @@ class ArgumentListTest extends TestCase {
 		return $dataSet;
 	}
 
-	public function data_randomLongArgs():array {
+	public static function data_randomLongArgs():array {
 		$dataSet = [];
 
 		for($i = 0; $i < 10; $i++) {
@@ -381,7 +381,7 @@ class ArgumentListTest extends TestCase {
 		return $dataSet;
 	}
 
-	public function data_randomShortArgs():array {
+	public static function data_randomShortArgs():array {
 		$dataSet = [];
 
 		for($i = 0; $i < 10; $i++) {
@@ -410,7 +410,7 @@ class ArgumentListTest extends TestCase {
 		return $dataSet;
 	}
 
-	public function data_randomLongEqualsArgs():array {
+	public static function data_randomLongEqualsArgs():array {
 		$dataSet = [];
 
 		for($i = 0; $i < 10; $i++) {
@@ -430,7 +430,7 @@ class ArgumentListTest extends TestCase {
 		return $dataSet;
 	}
 
-	public function data_randomShortEqualsArgs():array {
+	public static function data_randomShortEqualsArgs():array {
 		$dataSet = [];
 
 		for($i = 0; $i < 10; $i++) {

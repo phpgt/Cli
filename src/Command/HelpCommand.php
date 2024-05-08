@@ -117,7 +117,8 @@ class HelpCommand extends Command {
 		}
 
 		$output .= PHP_EOL;
-		$output .= "Type `{$this->scriptName} help COMMAND` to get help for that command.";
+		$output .= "Type `{$this->scriptName} help COMMAND` "
+			. "to get help for that command.";
 		return $output;
 	}
 

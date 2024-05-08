@@ -6,6 +6,7 @@ class CommandArgument extends Argument {
 		parent::__construct("", $commandName);
 	}
 
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
 	protected function processRawKey(string $rawKey): string {
 		return "";
 	}
