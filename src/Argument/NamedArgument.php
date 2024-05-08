@@ -6,6 +6,7 @@ class NamedArgument extends Argument {
 		parent::__construct("", $value);
 	}
 
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
 	protected function processRawKey(string $rawKey): string {
 		return "";
 	}

@@ -7,12 +7,9 @@ use Gt\Cli\Parameter\NamedParameter;
 use Gt\Cli\Parameter\Parameter;
 
 class VersionCommand extends Command {
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
 	public function run(ArgumentValueList $arguments = null):void {
-		$this->writeLine(
-			$this->getVersion($arguments?->get(
-				"command"
-			)
-		));
+		$this->writeLine($this->getVersion());
 	}
 
 	public function getName():string {
@@ -43,7 +40,8 @@ class VersionCommand extends Command {
 		return [];
 	}
 
-	protected function getVersion(string $command = null):string {
+	/** @SuppressWarnings(PHPMD.StaticAccess) */
+	protected function getVersion():string {
 		$package = InstalledVersions::getRootPackage()["name"];
 		return InstalledVersions::getVersion($package) ?? "";
 	}
