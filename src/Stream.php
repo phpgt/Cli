@@ -7,11 +7,15 @@ class Stream {
 	const IN = "in";
 	const OUT = "out";
 	const ERROR = "error";
+	const REPEAT_CHAR = "⟲";
 
 	protected SplFileObject $error;
 	protected SplFileObject $out;
 	protected SplFileObject $in;
 	protected SplFileObject $currentStream;
+
+	protected string $lastLineBuffer;
+	private bool $lastLineRepeats;
 
 	public function __construct(
 		string $in = null,
@@ -29,6 +33,8 @@ class Stream {
 		}
 
 		$this->setStream($in, $out, $error);
+		$this->lastLineBuffer = "";
+		$this->lastLineRepeats = false;
 	}
 
 	public function setStream(string $in, string $out, string $error):void {
@@ -81,7 +87,22 @@ class Stream {
 		string $message = "",
 		string $streamName = self::OUT
 	):void {
-		$this->write($message . PHP_EOL, $streamName);
+		$message .= PHP_EOL;
+
+		if($message === $this->lastLineBuffer) {
+			$this->write(self::REPEAT_CHAR, $streamName);
+			$this->lastLineRepeats = true;
+		}
+		else {
+			if($this->lastLineRepeats) {
+				$this->write(PHP_EOL, $streamName);
+			}
+
+			$this->write($message, $streamName);
+			$this->lastLineRepeats = false;
+		}
+
+		$this->lastLineBuffer = $message;
 	}
 
 	protected function getNamedStream(string $streamName):SplFileObject {
