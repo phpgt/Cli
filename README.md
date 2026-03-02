@@ -99,3 +99,9 @@ $this->setOutputPalette(Palette::RED, Palette::BLACK); // set default fg/bg
 $this->output("all output now uses the default palette");
 $this->resetOutputPalette(); // reset to terminal default
 ```
+
+# Proudly sponsored by
+
+[JetBrains Open Source sponsorship program](https://www.jetbrains.com/community/opensource/)
+
+[![JetBrains logo.](https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg)](https://www.jetbrains.com/community/opensource/)
