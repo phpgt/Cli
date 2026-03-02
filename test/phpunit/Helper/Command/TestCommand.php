@@ -9,7 +9,7 @@ use Gt\Cli\Parameter\Parameter;
 class TestCommand extends Command {
 	protected $prefix;
 
-	public function __construct(string $prefix = null) {
+	public function __construct(?string $prefix = null) {
 		if(!is_null($prefix)) {
 			$prefix .= "-";
 		}
@@ -17,7 +17,7 @@ class TestCommand extends Command {
 		$this->prefix = $prefix;
 	}
 
-	public function run(ArgumentValueList $arguments = null):void {
+	public function run(?ArgumentValueList $arguments = null):void {
 		$this->writeLine("Command running successfully");
 
 		$this->writeLine(

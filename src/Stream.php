@@ -18,9 +18,9 @@ class Stream {
 	protected ?Palette $outputBackground = null;
 
 	public function __construct(
-		string $in = null,
-		string $out = null,
-		string $error = null
+		?string $in = null,
+		?string $out = null,
+		?string $error = null
 	) {
 		if(is_null($in)) {
 			$in = "php://stdin";

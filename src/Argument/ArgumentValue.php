@@ -17,7 +17,7 @@ class ArgumentValue {
 		return implode(" ", $this->getAll());
 	}
 
-	public function push(string $value = null):void {
+	public function push(?string $value = null):void {
 		array_push($this->valueList, $value);
 	}
 

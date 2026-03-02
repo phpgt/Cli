@@ -21,11 +21,11 @@ use Gt\Cli\Stream;
 abstract class Command {
 	protected ?Stream $stream;
 
-	public function setStream(Stream $stream = null):void {
+	public function setStream(?Stream $stream = null):void {
 		$this->stream = $stream;
 	}
 
-	abstract public function run(ArgumentValueList $arguments = null):void;
+	abstract public function run(?ArgumentValueList $arguments = null):void;
 
 	abstract public function getName():string;
 
@@ -228,7 +228,7 @@ abstract class Command {
 		$this->write($message . PHP_EOL, $streamName);
 	}
 
-	protected function readLine(string $default = null):string {
+	protected function readLine(?string $default = null):string {
 		$prefix = "";
 
 		if(!is_null($default)) {
