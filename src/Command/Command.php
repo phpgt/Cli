@@ -12,9 +12,12 @@ use Gt\Cli\Parameter\MissingRequiredParameterValueException;
 use Gt\Cli\Parameter\NamedParameter;
 use Gt\Cli\Parameter\Parameter;
 use Gt\Cli\Parameter\UserParameter;
+use Gt\Cli\Palette;
 use Gt\Cli\Stream;
 
-/** @SuppressWarnings(PHPMD.ExcessiveClassComplexity) */
+/** @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 abstract class Command {
 	protected ?Stream $stream;
 
@@ -179,6 +182,43 @@ abstract class Command {
 		}
 
 		$this->stream->write($message, $streamName);
+	}
+
+	protected function output(
+		string $message,
+		?Palette $foreground = null,
+		?Palette $background = null,
+		string $streamName = Stream::OUT
+	):void {
+		if(!isset($this->stream)) {
+			return;
+		}
+
+		$this->stream->writeLine(
+			$message,
+			$streamName,
+			$foreground,
+			$background
+		);
+	}
+
+	protected function setOutputPalette(
+		?Palette $foreground = null,
+		?Palette $background = null
+	):void {
+		if(!isset($this->stream)) {
+			return;
+		}
+
+		$this->stream->setOutputPalette($foreground, $background);
+	}
+
+	protected function resetOutputPalette():void {
+		if(!isset($this->stream)) {
+			return;
+		}
+
+		$this->stream->resetOutputPalette();
 	}
 
 	protected function writeLine(

@@ -2,6 +2,7 @@
 namespace Gt\Cli\Test;
 
 use Gt\Cli\InvalidStreamNameException;
+use Gt\Cli\Palette;
 use Gt\Cli\Stream;
 use PHPUnit\Framework\TestCase;
 
@@ -116,5 +117,40 @@ class StreamTest extends TestCase {
 		);
 		$this->expectException(InvalidStreamNameException::class);
 		$stream->write("this does not exist", "nothing");
+	}
+
+	public function testWriteLineWithTemporaryPalette() {
+		$stream = new Stream(
+			"php://memory",
+			"php://memory",
+			"php://memory"
+		);
+		$out = $stream->getOutStream();
+		$stream->writeLine("test", Stream::OUT, Palette::GREEN);
+		$out->rewind();
+		self::assertMatchesRegularExpression(
+			"/^\e\\[32mtest\r?\n\e\\[0m$/",
+			$out->fread(1024)
+		);
+	}
+
+	public function testWriteLineWithPersistentPalette() {
+		$stream = new Stream(
+			"php://memory",
+			"php://memory",
+			"php://memory"
+		);
+		$out = $stream->getOutStream();
+
+		$stream->setOutputPalette(Palette::RED, Palette::BLACK);
+		$stream->writeLine("first");
+		$stream->resetOutputPalette();
+		$stream->writeLine("second");
+
+		$out->rewind();
+		self::assertMatchesRegularExpression(
+			"/^\e\\[31;40mfirst\r?\n\e\\[0msecond\r?\n$/",
+			$out->fread(1024)
+		);
 	}
 }
