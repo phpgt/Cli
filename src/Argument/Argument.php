@@ -6,7 +6,7 @@ abstract class Argument {
 	protected string $key;
 	protected ?string $value;
 
-	public function __construct(string $rawKey, string $value = null) {
+	public function __construct(string $rawKey, ?string $value = null) {
 		$this->key = $this->processRawKey($rawKey);
 		$this->value = $value;
 	}

@@ -8,7 +8,7 @@ use Gt\Cli\Parameter\Parameter;
 
 class VersionCommand extends Command {
 	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
-	public function run(ArgumentValueList $arguments = null):void {
+	public function run(?ArgumentValueList $arguments = null):void {
 		$this->writeLine($this->getVersion());
 	}
 

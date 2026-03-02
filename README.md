@@ -89,6 +89,17 @@ class TweetCommand extends Command {
 }
 ```
 
+## Coloured output
+
+Within a `Command`, output can be coloured consistently using the palette API:
+
+```php
+$this->output("some text", Palette::GREEN); // single green message, resets afterwards
+$this->setOutputPalette(Palette::RED, Palette::BLACK); // set default fg/bg
+$this->output("all output now uses the default palette");
+$this->resetOutputPalette(); // reset to terminal default
+```
+
 # Proudly sponsored by
 
 [JetBrains Open Source sponsorship program](https://www.jetbrains.com/community/opensource/)

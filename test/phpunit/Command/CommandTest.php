@@ -9,6 +9,7 @@ use Gt\Cli\Argument\NamedArgument;
 use Gt\Cli\Argument\NotEnoughArgumentsException;
 use Gt\Cli\CliException;
 use Gt\Cli\Command\HelpCommand;
+use Gt\Cli\Palette;
 use Gt\Cli\Parameter\MissingRequiredParameterException;
 use Gt\Cli\Parameter\MissingRequiredParameterValueException;
 use Gt\Cli\Stream;
@@ -32,7 +33,10 @@ class CommandTest extends ArgumentMockTestCase {
 			Stream::ERROR => [],
 		];
 		$stream->method("write")
-			->willReturnCallback(function($message, $streamName)use(&$buffer) {
+			->willReturnCallback(function(
+				string $message,
+				string $streamName
+			)use(&$buffer) {
 				$buffer[$streamName] []= $message;
 			});
 
@@ -297,5 +301,47 @@ class CommandTest extends ArgumentMockTestCase {
 		self::assertEquals("test-id", $argumentValueList->get("id"));
 		self::assertEquals("Test name!", $argumentValueList->get("name"));
 		self::assertEquals("test-scaffolding", $argumentValueList->get("framework"));
+	}
+
+	public function testOutputUsesPaletteWhenProvided() {
+		$stream = $this->createMock(Stream::class);
+		$stream->expects(self::once())
+			->method("writeLine")
+			->with(
+				"single green message",
+				Stream::OUT,
+				Palette::GREEN,
+				null
+			);
+
+		$command = new class extends TestCommand {
+			public function outputPublic(string $message, ?Palette $colour = null):void {
+				$this->output($message, $colour);
+			}
+		};
+		$command->setStream($stream);
+		$command->outputPublic("single green message", Palette::GREEN);
+	}
+
+	public function testSetAndResetOutputPalette() {
+		$stream = $this->createMock(Stream::class);
+		$stream->expects(self::once())
+			->method("setOutputPalette")
+			->with(Palette::RED, Palette::BLACK);
+		$stream->expects(self::once())
+			->method("resetOutputPalette");
+
+		$command = new class extends TestCommand {
+			public function setPalettePublic(?Palette $foreground, ?Palette $background):void {
+				$this->setOutputPalette($foreground, $background);
+			}
+
+			public function resetPalettePublic():void {
+				$this->resetOutputPalette();
+			}
+		};
+		$command->setStream($stream);
+		$command->setPalettePublic(Palette::RED, Palette::BLACK);
+		$command->resetPalettePublic();
 	}
 }

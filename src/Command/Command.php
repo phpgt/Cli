@@ -12,17 +12,20 @@ use Gt\Cli\Parameter\MissingRequiredParameterValueException;
 use Gt\Cli\Parameter\NamedParameter;
 use Gt\Cli\Parameter\Parameter;
 use Gt\Cli\Parameter\UserParameter;
+use Gt\Cli\Palette;
 use Gt\Cli\Stream;
 
-/** @SuppressWarnings(PHPMD.ExcessiveClassComplexity) */
+/** @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 abstract class Command {
 	protected ?Stream $stream;
 
-	public function setStream(Stream $stream = null):void {
+	public function setStream(?Stream $stream = null):void {
 		$this->stream = $stream;
 	}
 
-	abstract public function run(ArgumentValueList $arguments = null):void;
+	abstract public function run(?ArgumentValueList $arguments = null):void;
 
 	abstract public function getName():string;
 
@@ -181,6 +184,43 @@ abstract class Command {
 		$this->stream->write($message, $streamName);
 	}
 
+	protected function output(
+		string $message,
+		?Palette $foreground = null,
+		?Palette $background = null,
+		string $streamName = Stream::OUT
+	):void {
+		if(!isset($this->stream)) {
+			return;
+		}
+
+		$this->stream->writeLine(
+			$message,
+			$streamName,
+			$foreground,
+			$background
+		);
+	}
+
+	protected function setOutputPalette(
+		?Palette $foreground = null,
+		?Palette $background = null
+	):void {
+		if(!isset($this->stream)) {
+			return;
+		}
+
+		$this->stream->setOutputPalette($foreground, $background);
+	}
+
+	protected function resetOutputPalette():void {
+		if(!isset($this->stream)) {
+			return;
+		}
+
+		$this->stream->resetOutputPalette();
+	}
+
 	protected function writeLine(
 		string $message = "",
 		string $streamName = Stream::OUT
@@ -188,7 +228,7 @@ abstract class Command {
 		$this->write($message . PHP_EOL, $streamName);
 	}
 
-	protected function readLine(string $default = null):string {
+	protected function readLine(?string $default = null):string {
 		$prefix = "";
 
 		if(!is_null($default)) {
