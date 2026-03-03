@@ -7,6 +7,7 @@ class Stream {
 	const IN = "in";
 	const OUT = "out";
 	const ERROR = "error";
+	const REPEAT_CHAR = "⟲";
 	const ANSI_ESCAPE = "\033[";
 	const ANSI_RESET = self::ANSI_ESCAPE . "0m";
 
@@ -16,6 +17,9 @@ class Stream {
 	protected SplFileObject $currentStream;
 	protected ?Palette $outputForeground = null;
 	protected ?Palette $outputBackground = null;
+
+	protected string $lastLineBuffer;
+	private bool $lastLineRepeats;
 
 	public function __construct(
 		?string $in = null,
@@ -33,6 +37,8 @@ class Stream {
 		}
 
 		$this->setStream($in, $out, $error);
+		$this->lastLineBuffer = "";
+		$this->lastLineRepeats = false;
 	}
 
 	public function setStream(string $in, string $out, string $error):void {
@@ -100,12 +106,32 @@ class Stream {
 		?Palette $foreground = null,
 		?Palette $background = null,
 	):void {
-		$this->write(
-			$message . PHP_EOL,
-			$streamName,
-			$foreground,
-			$background
-		);
+		$line = $message . PHP_EOL;
+
+		if($line === $this->lastLineBuffer) {
+			$this->write(
+				self::REPEAT_CHAR,
+				$streamName,
+				$foreground,
+				$background
+			);
+			$this->lastLineRepeats = true;
+		}
+		else {
+			if($this->lastLineRepeats) {
+				$this->write(PHP_EOL, $streamName);
+			}
+
+			$this->write(
+				$line,
+				$streamName,
+				$foreground,
+				$background
+			);
+			$this->lastLineRepeats = false;
+		}
+
+		$this->lastLineBuffer = $line;
 	}
 
 	public function setOutputPalette(
