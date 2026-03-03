@@ -1,0 +1,6 @@
+analysis:
+  exclude_paths:
+    - "**"
+  include_paths:
+    - "src/**"
+
