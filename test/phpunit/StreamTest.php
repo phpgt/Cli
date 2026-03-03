@@ -2,6 +2,7 @@
 namespace Gt\Cli\Test;
 
 use Gt\Cli\InvalidStreamNameException;
+use Gt\Cli\Palette;
 use Gt\Cli\Stream;
 use PHPUnit\Framework\TestCase;
 
@@ -144,5 +145,40 @@ class StreamTest extends TestCase {
 		self::assertSame(10, substr_count($fullStreamContents, "should appear individually"), "Unique messages should appear individually");
 		self::assertSame(1, substr_count($fullStreamContents, "should only appear once"), "Similar messages should only appear once");
 		self::assertSame(4, substr_count($fullStreamContents, Stream::REPEAT_CHAR));
+	}
+
+	public function testWriteLineWithTemporaryPalette() {
+		$stream = new Stream(
+			"php://memory",
+			"php://memory",
+			"php://memory"
+		);
+		$out = $stream->getOutStream();
+		$stream->writeLine("test", Stream::OUT, Palette::GREEN);
+		$out->rewind();
+		self::assertMatchesRegularExpression(
+			"/^\e\\[32mtest\r?\n\e\\[0m$/",
+			$out->fread(1024)
+		);
+	}
+
+	public function testWriteLineWithPersistentPalette() {
+		$stream = new Stream(
+			"php://memory",
+			"php://memory",
+			"php://memory"
+		);
+		$out = $stream->getOutStream();
+
+		$stream->setOutputPalette(Palette::RED, Palette::BLACK);
+		$stream->writeLine("first");
+		$stream->resetOutputPalette();
+		$stream->writeLine("second");
+
+		$out->rewind();
+		self::assertMatchesRegularExpression(
+			"/^\e\\[31;40mfirst\r?\n\e\\[0msecond\r?\n$/",
+			$out->fread(1024)
+		);
 	}
 }

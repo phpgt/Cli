@@ -24,7 +24,7 @@ class Application {
 
 	public function __construct(
 		string $description,
-		ArgumentList $arguments = null,
+		?ArgumentList $arguments = null,
 		Command...$commands
 	) {
 		$this->description = $description;

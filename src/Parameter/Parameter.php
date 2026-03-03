@@ -11,9 +11,9 @@ class Parameter {
 	public function __construct(
 		bool $takesValue,
 		string $longOption,
-		string $shortOption = null,
-		string $documentation = null,
-		string $exampleValue = null
+		?string $shortOption = null,
+		?string $documentation = null,
+		?string $exampleValue = null
 	) {
 		$this->takesValue = $takesValue;
 		$this->longOption = $longOption;

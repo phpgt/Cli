@@ -7,7 +7,7 @@ use Gt\Cli\Parameter\NamedParameter;
 use Gt\Cli\Parameter\Parameter;
 
 class MultipleRequiredParameterCommand extends Command {
-	public function run(ArgumentValueList $arguments = null):void {
+	public function run(?ArgumentValueList $arguments = null):void {
 	}
 
 	public function getName():string {

@@ -11,7 +11,7 @@ class ArgumentValueList implements Iterator {
 	protected array $argumentValueMap = [];
 	protected int $iteratorIndex;
 
-	public function set(string $key, string $value = null):void {
+	public function set(string $key, ?string $value = null):void {
 		if($this->contains($key)) {
 			$valueObject = $this->get($key);
 		}
@@ -28,7 +28,7 @@ class ArgumentValueList implements Iterator {
 
 	public function get(
 		string $key,
-		string $default = null
+		?string $default = null
 	):ArgumentValue {
 		if(!$this->contains($key)) {
 			if(!is_null($default)) {
