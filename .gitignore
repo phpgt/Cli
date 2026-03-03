@@ -2,3 +2,4 @@
 /vendor
 /test/unit/_coverage
 *.phar
+/docs

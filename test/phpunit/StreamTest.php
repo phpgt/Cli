@@ -181,4 +181,47 @@ class StreamTest extends TestCase {
 			$out->fread(1024)
 		);
 	}
+
+	public function testCursorMovementMethods():void {
+		$stream = new Stream(
+			"php://memory",
+			"php://memory",
+			"php://memory"
+		);
+		$out = $stream->getOutStream();
+
+		$stream->saveCursorPosition();
+		$stream->moveCursorUp(2);
+		$stream->moveCursorDown(3);
+		$stream->moveCursorForward(4);
+		$stream->moveCursorBack(5);
+		$stream->setCursorColumn(6);
+		$stream->clearLine();
+		$stream->restoreCursorPosition();
+
+		$out->rewind();
+		self::assertSame(
+			"\e[s\e[2A\e[3B\e[4C\e[5D\e[6G\e[2K\e[u",
+			$out->fread(1024)
+		);
+	}
+
+	public function testRewindCursor():void {
+		$stream = new Stream(
+			"php://memory",
+			"php://memory",
+			"php://memory"
+		);
+		$out = $stream->getOutStream();
+
+		$stream->write("abc");
+		$stream->rewindCursor();
+		$stream->write("z");
+
+		$out->rewind();
+		self::assertSame(
+			"abc\rz",
+			$out->fread(1024)
+		);
+	}
 }
