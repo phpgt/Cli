@@ -26,7 +26,7 @@ abstract class Command {
 		$this->stream = $stream;
 	}
 
-	abstract public function run(?ArgumentValueList $arguments = null):void;
+	abstract public function run(?ArgumentValueList $arguments = null):?int;
 
 	abstract public function getName():string;
 

@@ -9,7 +9,7 @@ chdir(dirname(__DIR__));
 require "vendor/autoload.php";
 
 $repeatingCommand = new class extends Command {
-	public function run(ArgumentValueList $arguments = null):void {
+	public function run(?ArgumentValueList $arguments = null):?int {
 		$this->output("Demonstrating repeating line suppression...");
 		$this->output("");
 
@@ -24,6 +24,7 @@ $repeatingCommand = new class extends Command {
 		$this->output("Download complete.");
 		$this->output("");
 		$this->output("Repeated lines are marked with '" . Stream::REPEAT_CHAR . "'.");
+		return 0;
 	}
 
 	public function getName():string {

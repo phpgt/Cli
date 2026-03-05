@@ -69,7 +69,7 @@ class TweetCommand extends Command {
 		$this->setOptionalParameter(true, "location", "l");
 	}
 
-	public function run(ArgumentValueList $arguments):void {
+	public function run(?ArgumentValueList $arguments = null):?int {
 		if(!TwitterApi::isLoggedIn()) {
 			$this->writeLine("You must login first.", Stream::ERROR);
 		}

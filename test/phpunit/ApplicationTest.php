@@ -206,7 +206,9 @@ class ApplicationTest extends ArgumentMockTestCase {
 			public function __construct(Parameter...$requiredParams) {
 				$this->unitTestRequiredParams = $requiredParams;
 			}
-			public function run(ArgumentValueList $arguments = null):void {}
+			public function run(?ArgumentValueList $arguments = null):?int {
+				return null;
+			}
 			public function getName():string { return "example"; }
 			public function getDescription():string { return "Just an example"; }
 			public function getRequiredNamedParameterList():array {
@@ -234,6 +236,57 @@ class ApplicationTest extends ArgumentMockTestCase {
 		$sut->run();
 		self::assertSame(1, $actualErrorCode);
 		self::assertStreamContains("Error: Not enough arguments passed. Passed: 0 required: 1.", Stream::ERROR);
+	}
+
+	public function testExitCodeReturnedFromCommand():void {
+		/** @var ArgumentList|MockObject $arguments */
+		$arguments = self::createArgumentListMock();
+		$arguments->method("getCommandName")
+			->willReturn("example");
+
+		$command = new class extends Command {
+			public function run(?ArgumentValueList $arguments = null):?int {
+				return 9;
+			}
+
+			public function getName():string {
+				return "example";
+			}
+
+			public function getDescription():string {
+				return "A command that returns an exit code.";
+			}
+
+			public function getRequiredNamedParameterList():array {
+				return [];
+			}
+
+			public function getOptionalNamedParameterList():array {
+				return [];
+			}
+
+			public function getRequiredParameterList():array {
+				return [];
+			}
+
+			public function getOptionalParameterList():array {
+				return [];
+			}
+		};
+
+		$actualExitCode = null;
+		$application = new Application("test-app", $arguments, $command);
+		$application->setStream(
+			$this->inPath,
+			$this->outPath,
+			$this->errPath
+		);
+		$application->setExitHandler(function(int $exitCode) use(&$actualExitCode) {
+			$actualExitCode = $exitCode;
+		});
+		$application->run();
+
+		self::assertSame(9, $actualExitCode);
 	}
 
 	protected function assertStreamContains(

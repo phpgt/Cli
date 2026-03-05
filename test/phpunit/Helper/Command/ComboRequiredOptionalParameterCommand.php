@@ -7,7 +7,8 @@ use Gt\Cli\Parameter\NamedParameter;
 use Gt\Cli\Parameter\Parameter;
 
 class ComboRequiredOptionalParameterCommand extends Command {
-	public function run(?ArgumentValueList $arguments = null):void {
+	public function run(?ArgumentValueList $arguments = null):?int {
+		return null;
 	}
 
 	public function getName():string {
