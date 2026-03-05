@@ -21,6 +21,7 @@ class Stream {
 
 	protected string $lastLineBuffer;
 	private bool $lastLineRepeats;
+	public Cursor $cursor;
 
 	public function __construct(
 		?string $in = null,
@@ -37,6 +38,7 @@ class Stream {
 			$error = "php://stderr";
 		}
 
+		$this->cursor = new Cursor($this);
 		$this->setStream($in, $out, $error);
 		$this->lastLineBuffer = "";
 		$this->lastLineRepeats = false;
@@ -148,57 +150,6 @@ class Stream {
 		$this->outputBackground = null;
 	}
 
-	public function saveCursorPosition(string $streamName = self::OUT):void {
-		$this->writeAnsi("s", $streamName);
-	}
-
-	public function restoreCursorPosition(string $streamName = self::OUT):void {
-		$this->writeAnsi("u", $streamName);
-	}
-
-	public function moveCursorUp(
-		int $amount = 1,
-		string $streamName = self::OUT
-	):void {
-		$this->writeAnsi(max(1, $amount) . "A", $streamName);
-	}
-
-	public function moveCursorDown(
-		int $amount = 1,
-		string $streamName = self::OUT
-	):void {
-		$this->writeAnsi(max(1, $amount) . "B", $streamName);
-	}
-
-	public function moveCursorForward(
-		int $amount = 1,
-		string $streamName = self::OUT
-	):void {
-		$this->writeAnsi(max(1, $amount) . "C", $streamName);
-	}
-
-	public function moveCursorBack(
-		int $amount = 1,
-		string $streamName = self::OUT
-	):void {
-		$this->writeAnsi(max(1, $amount) . "D", $streamName);
-	}
-
-	public function setCursorColumn(
-		int $column = 1,
-		string $streamName = self::OUT
-	):void {
-		$this->writeAnsi(max(1, $column) . "G", $streamName);
-	}
-
-	public function rewindCursor(string $streamName = self::OUT):void {
-		$this->write(self::CARRIAGE_RETURN, $streamName);
-	}
-
-	public function clearLine(string $streamName = self::OUT):void {
-		$this->writeAnsi("2K", $streamName);
-	}
-
 	protected function getNamedStream(string $streamName):SplFileObject {
 		switch($streamName) {
 		case self::IN:
@@ -234,15 +185,5 @@ class Stream {
 			. "m"
 			. $message
 			. self::ANSI_RESET;
-	}
-
-	private function writeAnsi(
-		string $command,
-		string $streamName = self::OUT
-	):void {
-		$this->write(
-			self::ANSI_ESCAPE . $command,
-			$streamName
-		);
 	}
 }
