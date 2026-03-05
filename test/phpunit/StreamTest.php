@@ -190,14 +190,14 @@ class StreamTest extends TestCase {
 		);
 		$out = $stream->getOutStream();
 
-		$stream->saveCursorPosition();
-		$stream->moveCursorUp(2);
-		$stream->moveCursorDown(3);
-		$stream->moveCursorForward(4);
-		$stream->moveCursorBack(5);
-		$stream->setCursorColumn(6);
-		$stream->clearLine();
-		$stream->restoreCursorPosition();
+		$stream->cursor->savePosition();
+		$stream->cursor->moveUp(2);
+		$stream->cursor->moveDown(3);
+		$stream->cursor->moveForward(4);
+		$stream->cursor->moveBack(5);
+		$stream->cursor->setColumn(6);
+		$stream->cursor->clearLine();
+		$stream->cursor->restorePosition();
 
 		$out->rewind();
 		self::assertSame(
@@ -215,7 +215,7 @@ class StreamTest extends TestCase {
 		$out = $stream->getOutStream();
 
 		$stream->write("abc");
-		$stream->rewindCursor();
+		$stream->cursor->rewind();
 		$stream->write("z");
 
 		$out->rewind();

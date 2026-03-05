@@ -248,7 +248,7 @@ abstract class Command {
 			return;
 		}
 
-		$this->stream->saveCursorPosition($streamName);
+		$this->stream->cursor->savePosition($streamName);
 	}
 
 	protected function restoreCursorPosition(
@@ -258,7 +258,7 @@ abstract class Command {
 			return;
 		}
 
-		$this->stream->restoreCursorPosition($streamName);
+		$this->stream->cursor->restorePosition($streamName);
 	}
 
 	protected function moveCursorUp(
@@ -269,7 +269,7 @@ abstract class Command {
 			return;
 		}
 
-		$this->stream->moveCursorUp($amount, $streamName);
+		$this->stream->cursor->moveUp($amount, $streamName);
 	}
 
 	protected function moveCursorDown(
@@ -280,7 +280,7 @@ abstract class Command {
 			return;
 		}
 
-		$this->stream->moveCursorDown($amount, $streamName);
+		$this->stream->cursor->moveDown($amount, $streamName);
 	}
 
 	protected function moveCursorForward(
@@ -291,7 +291,7 @@ abstract class Command {
 			return;
 		}
 
-		$this->stream->moveCursorForward($amount, $streamName);
+		$this->stream->cursor->moveForward($amount, $streamName);
 	}
 
 	protected function moveCursorBack(
@@ -302,7 +302,7 @@ abstract class Command {
 			return;
 		}
 
-		$this->stream->moveCursorBack($amount, $streamName);
+		$this->stream->cursor->moveBack($amount, $streamName);
 	}
 
 	protected function setCursorColumn(
@@ -313,7 +313,7 @@ abstract class Command {
 			return;
 		}
 
-		$this->stream->setCursorColumn($column, $streamName);
+		$this->stream->cursor->setColumn($column, $streamName);
 	}
 
 	protected function rewindCursor(
@@ -323,7 +323,7 @@ abstract class Command {
 			return;
 		}
 
-		$this->stream->rewindCursor($streamName);
+		$this->stream->cursor->rewind($streamName);
 	}
 
 	protected function clearLine(string $streamName = Stream::OUT):void {
@@ -331,7 +331,7 @@ abstract class Command {
 			return;
 		}
 
-		$this->stream->clearLine($streamName);
+		$this->stream->cursor->clearLine($streamName);
 	}
 
 	protected function writeLine(
