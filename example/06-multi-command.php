@@ -11,7 +11,7 @@ chdir(dirname(__DIR__));
 require "vendor/autoload.php";
 
 $sumCommand = new class extends Command {
-	public function run(?ArgumentValueList $arguments = null):?int {
+	public function run(?ArgumentValueList $arguments = null):int {
 		$left = (string)$arguments->get("left");
 		$right = (string)$arguments->get("right");
 
@@ -53,7 +53,7 @@ $sumCommand = new class extends Command {
 };
 
 $repeatCommand = new class extends Command {
-	public function run(?ArgumentValueList $arguments = null):?int {
+	public function run(?ArgumentValueList $arguments = null):int {
 		$text = (string)$arguments->get("text");
 		$count = (int)(string)$arguments->get("count", "1");
 
@@ -64,6 +64,8 @@ $repeatCommand = new class extends Command {
 		for($i = 0; $i < $count; $i++) {
 			$this->output($text);
 		}
+
+		return 0;
 	}
 
 	public function getName():string {

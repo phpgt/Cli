@@ -11,7 +11,7 @@ chdir(dirname(__DIR__));
 require "vendor/autoload.php";
 
 $interactiveCommand = new class extends Command {
-	public function run(?ArgumentValueList $arguments = null):?int {
+	public function run(?ArgumentValueList $arguments = null):int {
 		$name = "";
 		if($arguments->contains("name")) {
 			$name = (string)$arguments->get("name");

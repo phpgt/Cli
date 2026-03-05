@@ -8,7 +8,7 @@ chdir(dirname(__DIR__));
 require "vendor/autoload.php";
 
 $progressCommand = new class extends Command {
-	public function run(?ArgumentValueList $arguments = null):?int {
+	public function run(?ArgumentValueList $arguments = null):int {
 		$total = 100;
 		$progressBar = $this->createProgressBar(
 			$total,

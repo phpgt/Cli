@@ -9,7 +9,7 @@ chdir(dirname(__DIR__));
 require "vendor/autoload.php";
 
 $repeatingCommand = new class extends Command {
-	public function run(?ArgumentValueList $arguments = null):?int {
+	public function run(?ArgumentValueList $arguments = null):int {
 		$this->output("Demonstrating repeating line suppression...");
 		$this->output("");
 

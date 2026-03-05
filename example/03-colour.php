@@ -9,7 +9,7 @@ chdir(dirname(__DIR__));
 require "vendor/autoload.php";
 
 $colourCommand = new class extends Command {
-	public function run(?ArgumentValueList $arguments = null):?int {
+	public function run(?ArgumentValueList $arguments = null):int {
 		$this->output("Single green message", Palette::GREEN);
 
 		$this->setOutputPalette(Palette::RED, Palette::BLACK);

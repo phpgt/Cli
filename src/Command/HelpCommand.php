@@ -25,7 +25,7 @@ class HelpCommand extends Command {
 		$this->applicationCommandList []= $this;
 	}
 
-	public function run(?ArgumentValueList $arguments = null):?int {
+	public function run(?ArgumentValueList $arguments = null):int {
 		$command = null;
 		if($arguments) {
 			$command = (string)$arguments->get(
@@ -42,7 +42,7 @@ class HelpCommand extends Command {
 		}
 
 		$this->writeLine($output);
-		return null;
+		return 0;
 	}
 
 	public function getName():string {

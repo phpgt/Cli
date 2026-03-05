@@ -9,7 +9,7 @@ chdir(dirname(__DIR__));
 require "vendor/autoload.php";
 
 $greeterCommand = new class extends Command {
-	public function run(?ArgumentValueList $arguments = null):?int {
+	public function run(?ArgumentValueList $arguments = null):int {
 		$name = (string)$arguments->get("name", "you");
 		$this->output("Hello, $name!");
 		return 0;

@@ -206,8 +206,8 @@ class ApplicationTest extends ArgumentMockTestCase {
 			public function __construct(Parameter...$requiredParams) {
 				$this->unitTestRequiredParams = $requiredParams;
 			}
-			public function run(?ArgumentValueList $arguments = null):?int {
-				return null;
+			public function run(?ArgumentValueList $arguments = null):int {
+				return 0;
 			}
 			public function getName():string { return "example"; }
 			public function getDescription():string { return "Just an example"; }
@@ -245,7 +245,7 @@ class ApplicationTest extends ArgumentMockTestCase {
 			->willReturn("example");
 
 		$command = new class extends Command {
-			public function run(?ArgumentValueList $arguments = null):?int {
+			public function run(?ArgumentValueList $arguments = null):int {
 				return 9;
 			}
 

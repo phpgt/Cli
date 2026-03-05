@@ -17,7 +17,7 @@ class TestCommand extends Command {
 		$this->prefix = $prefix;
 	}
 
-	public function run(?ArgumentValueList $arguments = null):?int {
+	public function run(?ArgumentValueList $arguments = null):int {
 		$this->writeLine("Command running successfully");
 
 		$this->writeLine(
@@ -46,7 +46,7 @@ class TestCommand extends Command {
 			$this->writeLine("No-value argument not set");
 		}
 
-		return null;
+		return 0;
 	}
 
 	public function getName():string {

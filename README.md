@@ -69,22 +69,26 @@ class TweetCommand extends Command {
 		$this->setOptionalParameter(true, "location", "l");
 	}
 
-	public function run(?ArgumentValueList $arguments = null):?int {
+	public function run(?ArgumentValueList $arguments = null):int {
 		if(!TwitterApi::isLoggedIn()) {
 			$this->writeLine("You must login first.", Stream::ERROR);
+			return 1;
 		}
 		
 		try {
 			$uri = TwitterApi::sendTweet($arguments->get("message"));
 			$this->writeLine("Sent! View online: $uri");
 		}
-		catch(TwitterApiException $exception) {
-			$this->writeLine(
-				"Error sending Tweet: "
-				. $exception->getMessage(),
-				Stream::ERROR
-			);
-		}
+			catch(TwitterApiException $exception) {
+				$this->writeLine(
+					"Error sending Tweet: "
+					. $exception->getMessage(),
+					Stream::ERROR
+				);
+				return 2;
+			}
+
+			return 0;
 	}
 }
 ```

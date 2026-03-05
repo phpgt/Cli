@@ -89,35 +89,29 @@ class Application {
 			);
 
 			$firstArgument = $argumentValueList->first();
-				if($firstArgument) {
-					switch($firstArgument->getKey()) {
-					case "help":
-						$helpArgs = new ArgumentValueList();
-						$helpArgs->set("command", $commandName);
-						$this->exitCode = $this->normaliseExitCode(
-							$this->helpCommand->run($helpArgs)
-						);
-						$this->exit();
-						return;
+			if($firstArgument) {
+				switch($firstArgument->getKey()) {
+				case "help":
+					$helpArgs = new ArgumentValueList();
+					$helpArgs->set("command", $commandName);
+					$this->exitCode = $this->helpCommand->run($helpArgs);
+					$this->exit();
+					return;
 
-					case "version":
-						$versionArgs = new ArgumentValueList();
-						$versionArgs->set("command", $commandName);
-						$this->exitCode = $this->normaliseExitCode(
-							$this->versionCommand->run($versionArgs)
-						);
-						$this->exit();
-						return;
-					}
+				case "version":
+					$versionArgs = new ArgumentValueList();
+					$versionArgs->set("command", $commandName);
+					$this->exitCode = $this->versionCommand->run($versionArgs);
+					$this->exit();
+					return;
 				}
+			}
 
 			$command->checkArguments(
 				$this->arguments
 			);
-				$this->exitCode = $this->normaliseExitCode(
-					$command->run($argumentValueList)
-				);
-			}
+			$this->exitCode = $command->run($argumentValueList);
+		}
 		catch(MissingRequiredParameterException $exception) {
 			$message = "Error - Missing required parameter: "
 				. $exception->getMessage();
@@ -169,11 +163,4 @@ class Application {
 		}
 	}
 
-	private function normaliseExitCode(?int $commandExitCode):int {
-		if(is_null($commandExitCode)) {
-			return 0;
-		}
-
-		return $commandExitCode;
-	}
 }
