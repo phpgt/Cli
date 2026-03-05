@@ -84,8 +84,8 @@ class ProgressBar {
 			$this->max
 		);
 
-		$this->stream->rewindCursor($this->streamName);
-		$this->stream->clearLine($this->streamName);
+		$this->stream->cursor->rewind($this->streamName);
+		$this->stream->cursor->clearLine($this->streamName);
 		$this->stream->write($message, $this->streamName);
 	}
 }

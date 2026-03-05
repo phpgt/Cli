@@ -9,6 +9,7 @@ class Stream {
 	const ERROR = "error";
 	const REPEAT_CHAR = "⟲";
 	const ANSI_ESCAPE = "\033[";
+	const CARRIAGE_RETURN = "\r";
 	const ANSI_RESET = self::ANSI_ESCAPE . "0m";
 
 	protected SplFileObject $error;
@@ -20,6 +21,7 @@ class Stream {
 
 	protected string $lastLineBuffer;
 	private bool $lastLineRepeats;
+	public Cursor $cursor;
 
 	public function __construct(
 		?string $in = null,
@@ -36,6 +38,7 @@ class Stream {
 			$error = "php://stderr";
 		}
 
+		$this->cursor = new Cursor($this);
 		$this->setStream($in, $out, $error);
 		$this->lastLineBuffer = "";
 		$this->lastLineRepeats = false;

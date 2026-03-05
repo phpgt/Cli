@@ -13,6 +13,7 @@ use Gt\Cli\Parameter\NamedParameter;
 use Gt\Cli\Parameter\Parameter;
 use Gt\Cli\Parameter\UserParameter;
 use Gt\Cli\Palette;
+use Gt\Cli\ProgressBar;
 use Gt\Cli\Stream;
 
 /** @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
@@ -219,6 +220,118 @@ abstract class Command {
 		}
 
 		$this->stream->resetOutputPalette();
+	}
+
+	protected function createProgressBar(
+		int $max = 100,
+		string $label = "Progress",
+		int $width = 40,
+		string $streamName = Stream::OUT
+	):ProgressBar {
+		if(!isset($this->stream)) {
+			$this->stream = new Stream();
+		}
+
+		return new ProgressBar(
+			$this->stream,
+			$max,
+			$label,
+			$width,
+			$streamName
+		);
+	}
+
+	protected function saveCursorPosition(
+		string $streamName = Stream::OUT
+	):void {
+		if(!isset($this->stream)) {
+			return;
+		}
+
+		$this->stream->cursor->savePosition($streamName);
+	}
+
+	protected function restoreCursorPosition(
+		string $streamName = Stream::OUT
+	):void {
+		if(!isset($this->stream)) {
+			return;
+		}
+
+		$this->stream->cursor->restorePosition($streamName);
+	}
+
+	protected function moveCursorUp(
+		int $amount = 1,
+		string $streamName = Stream::OUT
+	):void {
+		if(!isset($this->stream)) {
+			return;
+		}
+
+		$this->stream->cursor->moveUp($amount, $streamName);
+	}
+
+	protected function moveCursorDown(
+		int $amount = 1,
+		string $streamName = Stream::OUT
+	):void {
+		if(!isset($this->stream)) {
+			return;
+		}
+
+		$this->stream->cursor->moveDown($amount, $streamName);
+	}
+
+	protected function moveCursorForward(
+		int $amount = 1,
+		string $streamName = Stream::OUT
+	):void {
+		if(!isset($this->stream)) {
+			return;
+		}
+
+		$this->stream->cursor->moveForward($amount, $streamName);
+	}
+
+	protected function moveCursorBack(
+		int $amount = 1,
+		string $streamName = Stream::OUT
+	):void {
+		if(!isset($this->stream)) {
+			return;
+		}
+
+		$this->stream->cursor->moveBack($amount, $streamName);
+	}
+
+	protected function setCursorColumn(
+		int $column = 1,
+		string $streamName = Stream::OUT
+	):void {
+		if(!isset($this->stream)) {
+			return;
+		}
+
+		$this->stream->cursor->setColumn($column, $streamName);
+	}
+
+	protected function rewindCursor(
+		string $streamName = Stream::OUT
+	):void {
+		if(!isset($this->stream)) {
+			return;
+		}
+
+		$this->stream->cursor->rewind($streamName);
+	}
+
+	protected function clearLine(string $streamName = Stream::OUT):void {
+		if(!isset($this->stream)) {
+			return;
+		}
+
+		$this->stream->cursor->clearLine($streamName);
 	}
 
 	protected function writeLine(

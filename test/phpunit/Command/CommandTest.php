@@ -12,6 +12,7 @@ use Gt\Cli\Command\HelpCommand;
 use Gt\Cli\Palette;
 use Gt\Cli\Parameter\MissingRequiredParameterException;
 use Gt\Cli\Parameter\MissingRequiredParameterValueException;
+use Gt\Cli\ProgressBar;
 use Gt\Cli\Stream;
 use Gt\Cli\Test\Helper\ArgumentMockTestCase;
 use Gt\Cli\Test\Helper\Command\AllParameterTypesCommand;
@@ -343,5 +344,60 @@ class CommandTest extends ArgumentMockTestCase {
 		$command->setStream($stream);
 		$command->setPalettePublic(Palette::RED, Palette::BLACK);
 		$command->resetPalettePublic();
+	}
+
+	public function testCreateProgressBar():void {
+		$stream = new Stream(
+			"php://memory",
+			"php://memory",
+			"php://memory"
+		);
+		$out = $stream->getOutStream();
+
+		$command = new class extends TestCommand {
+			public function createProgressBarPublic(int $max):ProgressBar {
+				return $this->createProgressBar($max, "Work", 10);
+			}
+		};
+		$command->setStream($stream);
+		$progressBar = $command->createProgressBarPublic(10);
+		$progressBar->setProgress(5);
+
+		$out->rewind();
+		self::assertSame(
+			"\r\e[2KWork [=====     ]  50% (5/10)",
+			$out->fread(1024)
+		);
+	}
+
+	public function testCursorHelpers():void {
+		$stream = new Stream(
+			"php://memory",
+			"php://memory",
+			"php://memory"
+		);
+		$out = $stream->getOutStream();
+
+		$command = new class extends TestCommand {
+			public function useCursorHelpers():void {
+				$this->saveCursorPosition();
+				$this->moveCursorUp(1);
+				$this->moveCursorDown(1);
+				$this->moveCursorForward(1);
+				$this->moveCursorBack(1);
+				$this->setCursorColumn(1);
+				$this->rewindCursor();
+				$this->clearLine();
+				$this->restoreCursorPosition();
+			}
+		};
+		$command->setStream($stream);
+		$command->useCursorHelpers();
+
+		$out->rewind();
+		self::assertSame(
+			"\e[s\e[1A\e[1B\e[1C\e[1D\e[1G\r\e[2K\e[u",
+			$out->fread(1024)
+		);
 	}
 }
