@@ -206,22 +206,36 @@ class ApplicationTest extends ArgumentMockTestCase {
 			public function __construct(Parameter...$requiredParams) {
 				$this->unitTestRequiredParams = $requiredParams;
 			}
+
 			public function run(?ArgumentValueList $arguments = null):int {
 				return 0;
 			}
-			public function getName():string { return "example"; }
-			public function getDescription():string { return "Just an example"; }
+
+			public function getName():string {
+				return "example";
+			}
+
+			public function getDescription():string {
+				return "Just an example";
+			}
+
 			public function getRequiredNamedParameterList():array {
 				return [
 					$this->unitTestRequiredParams[0],
 				];
 			}
-			public function getOptionalNamedParameterList():array { return []; }
+
+			public function getOptionalNamedParameterList():array {
+				return [];
+			}
+
 			public function getRequiredParameterList():array {
 				return [];
 			}
 
-			public function getOptionalParameterList():array { return []; }
+			public function getOptionalParameterList():array {
+				return [];
+			}
 		};
 		$actualErrorCode = null;
 		$sut = new Application("Test app", $argumentsList, $command1);
@@ -235,7 +249,10 @@ class ApplicationTest extends ArgumentMockTestCase {
 		});
 		$sut->run();
 		self::assertSame(1, $actualErrorCode);
-		self::assertStreamContains("Error: Not enough arguments passed. Passed: 0 required: 1.", Stream::ERROR);
+		self::assertStreamContains(
+			"Error: Not enough arguments passed. Passed: 0 required: 1.",
+			Stream::ERROR
+		);
 	}
 
 	public function testExitCodeReturnedFromCommand():void {
@@ -287,6 +304,68 @@ class ApplicationTest extends ArgumentMockTestCase {
 		$application->run();
 
 		self::assertSame(9, $actualExitCode);
+	}
+
+	public function testExitCodeReturnedFromHelpFlag():void {
+		$helpArgument = self::createMock(LongOptionArgument::class);
+		$helpArgument->method("getKey")->willReturn("help");
+		$helpArgument->method("getValue")->willReturn("");
+		$arguments = self::createArgumentListMock([$helpArgument]);
+		$arguments->method("getCommandName")->willReturn("valid-test");
+
+		$actualExitCode = null;
+		$application = new Application(
+			"test-app",
+			$arguments,
+			new TestCommand("valid")
+		);
+		$application->setStream(
+			$this->inPath,
+			$this->outPath,
+			$this->errPath
+		);
+		$application->setExitHandler(function(int $exitCode) use(&$actualExitCode) {
+			$actualExitCode = $exitCode;
+		});
+		$application->run();
+
+		self::assertSame(0, $actualExitCode);
+		self::assertStreamContains(
+			"valid-test: A test command for unit testing",
+			Stream::OUT
+		);
+		self::assertStreamEmpty(Stream::ERROR);
+	}
+
+	public function testExitCodeReturnedFromVersionFlag():void {
+		$versionArgument = self::createMock(LongOptionArgument::class);
+		$versionArgument->method("getKey")->willReturn("version");
+		$versionArgument->method("getValue")->willReturn("");
+		$arguments = self::createArgumentListMock([$versionArgument]);
+		$arguments->method("getCommandName")->willReturn("valid-test");
+
+		$actualExitCode = null;
+		$application = new Application(
+			"test-app",
+			$arguments,
+			new TestCommand("valid")
+		);
+		$application->setStream(
+			$this->inPath,
+			$this->outPath,
+			$this->errPath
+		);
+		$application->setExitHandler(function(int $exitCode) use(&$actualExitCode) {
+			$actualExitCode = $exitCode;
+		});
+		$application->run();
+
+		self::assertSame(0, $actualExitCode);
+		self::assertStreamEmpty(Stream::ERROR);
+		self::assertStringNotContainsString(
+			"Command running successfully",
+			(string)file_get_contents($this->outPath)
+		);
 	}
 
 	protected function assertStreamContains(
