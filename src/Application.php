@@ -94,13 +94,15 @@ class Application {
 				case "help":
 					$helpArgs = new ArgumentValueList();
 					$helpArgs->set("command", $commandName);
-					$this->helpCommand->run($helpArgs);
+					$this->exitCode = $this->helpCommand->run($helpArgs);
+					$this->exit();
 					return;
 
 				case "version":
 					$versionArgs = new ArgumentValueList();
 					$versionArgs->set("command", $commandName);
-					$this->versionCommand->run($versionArgs);
+					$this->exitCode = $this->versionCommand->run($versionArgs);
+					$this->exit();
 					return;
 				}
 			}
@@ -108,8 +110,7 @@ class Application {
 			$command->checkArguments(
 				$this->arguments
 			);
-			$command->run($argumentValueList);
-			$this->exitCode = 0;
+			$this->exitCode = $command->run($argumentValueList);
 		}
 		catch(MissingRequiredParameterException $exception) {
 			$message = "Error - Missing required parameter: "
@@ -161,4 +162,5 @@ class Application {
 			exit($this->exitCode);
 		}
 	}
+
 }

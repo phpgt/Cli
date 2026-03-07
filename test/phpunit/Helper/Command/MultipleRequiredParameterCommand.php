@@ -7,7 +7,9 @@ use Gt\Cli\Parameter\NamedParameter;
 use Gt\Cli\Parameter\Parameter;
 
 class MultipleRequiredParameterCommand extends Command {
-	public function run(?ArgumentValueList $arguments = null):void {
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
+	public function run(?ArgumentValueList $arguments = null):int {
+		return 0;
 	}
 
 	public function getName():string {

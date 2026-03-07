@@ -11,7 +11,7 @@ chdir(dirname(__DIR__));
 require "vendor/autoload.php";
 
 $deployCommand = new class extends Command {
-	public function run(ArgumentValueList $arguments = null):void {
+	public function run(?ArgumentValueList $arguments = null):int {
 		$environment = (string)$arguments->get("environment");
 		$service = (string)$arguments->get("service", "web");
 		$tag = (string)$arguments->get("tag");
@@ -37,6 +37,7 @@ $deployCommand = new class extends Command {
 		}
 
 		$this->output("Done.");
+		return 0;
 	}
 
 	public function getName():string {

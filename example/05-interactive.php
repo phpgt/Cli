@@ -11,7 +11,7 @@ chdir(dirname(__DIR__));
 require "vendor/autoload.php";
 
 $interactiveCommand = new class extends Command {
-	public function run(ArgumentValueList $arguments = null):void {
+	public function run(?ArgumentValueList $arguments = null):int {
 		$name = "";
 		if($arguments->contains("name")) {
 			$name = (string)$arguments->get("name");
@@ -29,6 +29,7 @@ $interactiveCommand = new class extends Command {
 		$this->setOutputPalette(Palette::GREEN);
 		$this->output($greeting);
 		$this->resetOutputPalette();
+		return 0;
 	}
 
 	public function getName():string {

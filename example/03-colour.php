@@ -9,7 +9,7 @@ chdir(dirname(__DIR__));
 require "vendor/autoload.php";
 
 $colourCommand = new class extends Command {
-	public function run(ArgumentValueList $arguments = null):void {
+	public function run(?ArgumentValueList $arguments = null):int {
 		$this->output("Single green message", Palette::GREEN);
 
 		$this->setOutputPalette(Palette::RED, Palette::BLACK);
@@ -19,6 +19,7 @@ $colourCommand = new class extends Command {
 
 		$this->resetOutputPalette();
 		$this->output("Palette reset to terminal default");
+		return 0;
 	}
 
 	public function getName():string {
