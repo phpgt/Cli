@@ -350,6 +350,49 @@ class ArgumentListTest extends TestCase {
 		$argumentList->getValueForParameter($param);
 	}
 
+	public function testContainsWithChainedShortOptions() {
+		$argumentList = new ArgumentList(
+			"test-script",
+			"test-command",
+			"-czf",
+			"myarchive.tar.gz"
+		);
+
+		$paramC = self::createMock(Parameter::class);
+		$paramC->method("getShortOption")->willReturn("c");
+		$paramZ = self::createMock(Parameter::class);
+		$paramZ->method("getShortOption")->willReturn("z");
+		$paramF = self::createMock(Parameter::class);
+		$paramF->method("getShortOption")->willReturn("f");
+
+		self::assertTrue($argumentList->contains($paramC));
+		self::assertTrue($argumentList->contains($paramZ));
+		self::assertTrue($argumentList->contains($paramF));
+	}
+
+	public function testGetValueForParameterWithChainedShortOptions() {
+		$argumentList = new ArgumentList(
+			"test-script",
+			"test-command",
+			"-czf",
+			"myarchive.tar.gz"
+		);
+
+		$paramC = self::createMock(Parameter::class);
+		$paramC->method("getShortOption")->willReturn("c");
+		$paramZ = self::createMock(Parameter::class);
+		$paramZ->method("getShortOption")->willReturn("z");
+		$paramF = self::createMock(Parameter::class);
+		$paramF->method("getShortOption")->willReturn("f");
+
+		self::assertNull($argumentList->getValueForParameter($paramC));
+		self::assertNull($argumentList->getValueForParameter($paramZ));
+		self::assertEquals(
+			"myarchive.tar.gz",
+			$argumentList->getValueForParameter($paramF)
+		);
+	}
+
 	public static function data_randomNamedArgs():array {
 		$dataSet = [];
 

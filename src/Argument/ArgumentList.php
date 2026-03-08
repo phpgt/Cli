@@ -56,6 +56,31 @@ class ArgumentList implements Iterator {
 			}
 
 			if ($arg[0] === "-") {
+				if($this->isChainedShortOption($arg)) {
+					$shortOptionCharList = str_split(substr($arg, 1));
+					$lastIndex = count($shortOptionCharList) - 1;
+					$nextArgument = $arguments[$i + 1] ?? null;
+					$lastValue = null;
+
+					if($nextArgument
+					&& strpos($nextArgument, "-") !== 0) {
+						$lastValue = $nextArgument;
+						$skipNextArgument = true;
+					}
+
+					foreach($shortOptionCharList as $shortOptionIndex => $char) {
+						array_push(
+							$this->argumentList,
+							new ShortOptionArgument(
+								"-" . $char,
+								$shortOptionIndex === $lastIndex ? $lastValue : null
+							)
+						);
+					}
+
+					continue;
+				}
+
 				if(strstr($arg, "=")) {
 					$name = substr(
 						$arg,
@@ -113,6 +138,22 @@ class ArgumentList implements Iterator {
 				);
 			}
 		}
+	}
+
+	private function isChainedShortOption(string $arg):bool {
+		if(strlen($arg) <= 2) {
+			return false;
+		}
+
+		if($arg[1] === "-") {
+			return false;
+		}
+
+		if(strpos($arg, "=") !== false) {
+			return false;
+		}
+
+		return preg_match('/^-[a-zA-Z]+$/', $arg) === 1;
 	}
 
 	/**
