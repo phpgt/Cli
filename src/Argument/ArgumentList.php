@@ -3,6 +3,7 @@ namespace Gt\Cli\Argument;
 
 use Gt\Cli\Parameter\Parameter;
 use Iterator;
+use LogicException;
 
 /** @implements Iterator<int, Argument> */
 class ArgumentList implements Iterator {
@@ -226,7 +227,7 @@ class ArgumentList implements Iterator {
 		}
 
 		if($containsLong && $containsShort) {
-			throw new \LogicException(
+			throw new LogicException(
 				"Parameter cannot be set by both --$longOption and -$shortOption"
 			);
 		}
