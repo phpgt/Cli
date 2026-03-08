@@ -152,44 +152,83 @@ class ArgumentList implements Iterator {
 	public function contains(Parameter $parameter):bool {
 		$longOption = $parameter->getLongOption();
 		$shortOption = $parameter->getShortOption();
+		$containsLong = false;
+		$containsShort = false;
 
 		foreach($this->argumentList as $argument) {
 			$key = $argument->getKey();
 
 			if($argument instanceof LongOptionArgument) {
 				if($key === $longOption) {
-					return true;
+					$containsLong = true;
 				}
 			}
 			elseif($argument instanceof ShortOptionArgument) {
 				if($key === $shortOption) {
-					return true;
+					$containsShort = true;
 				}
 			}
 		}
 
-		return false;
+		$this->throwIfBothLongAndShortOptionAreSet(
+			$longOption,
+			$shortOption,
+			$containsLong,
+			$containsShort
+		);
+
+		return $containsLong || $containsShort;
 	}
 
 	public function getValueForParameter(Parameter $parameter):?string {
 		$longOption = $parameter->getLongOption();
 		$shortOption = $parameter->getShortOption();
+		$containsLong = false;
+		$containsShort = false;
+		$longValue = null;
+		$shortValue = null;
 
 		foreach($this->argumentList as $argument) {
 			$key = $argument->getKey();
 
 			if($argument instanceof LongOptionArgument) {
 				if($key === $longOption) {
-					return $argument->getValue();
+					$containsLong = true;
+					$longValue = $argument->getValue();
 				}
 			}
 			elseif($argument instanceof ShortOptionArgument) {
 				if($key === $shortOption) {
-					return $argument->getValue();
+					$containsShort = true;
+					$shortValue = $argument->getValue();
 				}
 			}
 		}
 
-		return null;
+		$this->throwIfBothLongAndShortOptionAreSet(
+			$longOption,
+			$shortOption,
+			$containsLong,
+			$containsShort
+		);
+
+		return $longValue ?? $shortValue;
+	}
+
+	private function throwIfBothLongAndShortOptionAreSet(
+		string $longOption,
+		?string $shortOption,
+		bool $containsLong,
+		bool $containsShort
+	):void {
+		if(!$shortOption) {
+			return;
+		}
+
+		if($containsLong && $containsShort) {
+			throw new \LogicException(
+				"Parameter cannot be set by both --$longOption and -$shortOption"
+			);
+		}
 	}
 }
