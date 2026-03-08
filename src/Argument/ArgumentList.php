@@ -16,7 +16,7 @@ class ArgumentList implements Iterator {
 
 	public function __construct(string $script, string...$arguments) {
 		$this->script = $script;
-		$this->buildArgumentList($arguments);
+		$this->parseArguments($arguments);
 	}
 
 	public function getScript():string {
@@ -27,133 +27,10 @@ class ArgumentList implements Iterator {
 		return $this->argumentList[0]->getValue() ?? "";
 	}
 
-	/**
-	 * @param string[] $arguments
-	 * @SuppressWarnings(PHPMD.CyclomaticComplexity)
-	 */
-	protected function buildArgumentList(array $arguments):void {
-		if(isset($arguments[0])
-		&& $arguments[0][0] !== "-") {
-			$commandArgument = array_shift($arguments);
-			array_push(
-				$this->argumentList,
-				new CommandArgument($commandArgument)
-			);
-		}
-		else {
-			$defaultCommandArgument = new CommandArgument(
-				self::DEFAULT_COMMAND
-			);
-			array_push($this->argumentList, $defaultCommandArgument);
-		}
-
-		$skipNextArgument = false;
-
-		foreach ($arguments as $i => $arg) {
-			if($skipNextArgument) {
-				$skipNextArgument = false;
-				continue;
-			}
-
-			if ($arg[0] === "-") {
-				if($this->isChainedShortOption($arg)) {
-					$shortOptionCharList = str_split(substr($arg, 1));
-					$lastIndex = count($shortOptionCharList) - 1;
-					$nextArgument = $arguments[$i + 1] ?? null;
-					$lastValue = null;
-
-					if($nextArgument
-					&& strpos($nextArgument, "-") !== 0) {
-						$lastValue = $nextArgument;
-						$skipNextArgument = true;
-					}
-
-					foreach($shortOptionCharList as $shortOptionIndex => $char) {
-						array_push(
-							$this->argumentList,
-							new ShortOptionArgument(
-								"-" . $char,
-								$shortOptionIndex === $lastIndex ? $lastValue : null
-							)
-						);
-					}
-
-					continue;
-				}
-
-				if(strstr($arg, "=")) {
-					$name = substr(
-						$arg,
-						0,
-						strpos(
-							$arg,
-							"="
-						) ?: 0
-					);
-
-					$value = substr(
-						$arg,
-						strpos(
-							$arg,
-							"="
-						) + 1
-					);
-				}
-				else {
-					$name = $arg;
-
-					$nextArgument = $arguments[$i + 1] ?? null;
-
-					if($nextArgument
-					&& strpos($nextArgument, "-") !== 0) {
-						$value = $arguments[$i + 1];
-						$skipNextArgument = true;
-					}
-					else {
-						$value = null;
-					}
-				}
-
-				if ($arg[1] === "-") {
-					array_push(
-						$this->argumentList,
-						new LongOptionArgument(
-							$name,
-							$value
-						)
-					);
-				}
-				else {
-					array_push($this->argumentList,
-						new ShortOptionArgument(
-							$arg,
-							$value
-						)
-					);
-				}
-			} else {
-				array_push(
-					$this->argumentList,
-					new NamedArgument($arg)
-				);
-			}
-		}
-	}
-
-	private function isChainedShortOption(string $arg):bool {
-		if(strlen($arg) <= 2) {
-			return false;
-		}
-
-		if($arg[1] === "-") {
-			return false;
-		}
-
-		if(strpos($arg, "=") !== false) {
-			return false;
-		}
-
-		return preg_match('/^-[a-zA-Z]+$/', $arg) === 1;
+	/** @param string[] $arguments */
+	protected function parseArguments(array $arguments):void {
+		$parser = new ArgumentParser();
+		$this->argumentList = $parser->parse($arguments);
 	}
 
 	/**

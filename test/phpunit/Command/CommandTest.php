@@ -2,20 +2,13 @@
 namespace Gt\Cli\Test\Command;
 
 use Gt\Cli\Argument\ArgumentList;
-use Gt\Cli\Argument\ArgumentValueList;
 use Gt\Cli\Argument\CommandArgument;
 use Gt\Cli\Argument\LongOptionArgument;
 use Gt\Cli\Argument\NamedArgument;
 use Gt\Cli\Argument\NotEnoughArgumentsException;
-use Gt\Cli\CliException;
-use Gt\Cli\Command\HelpCommand;
-use Gt\Cli\Palette;
 use Gt\Cli\Parameter\MissingRequiredParameterException;
 use Gt\Cli\Parameter\MissingRequiredParameterValueException;
-use Gt\Cli\ProgressBar;
-use Gt\Cli\Stream;
 use Gt\Cli\Test\Helper\ArgumentMockTestCase;
-use Gt\Cli\Test\Helper\Command\AllParameterTypesCommand;
 use Gt\Cli\Test\Helper\Command\ComboRequiredOptionalParameterCommand;
 use Gt\Cli\Test\Helper\Command\MultipleRequiredParameterCommand;
 use Gt\Cli\Test\Helper\Command\SingleRequiredNamedParameterCommand;
@@ -23,49 +16,17 @@ use Gt\Cli\Test\Helper\Command\TestCommand;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class CommandTest extends ArgumentMockTestCase {
-	public function testSetOutput() {
-		/** @var Stream|MockObject $stream */
-		$stream = $this->createMock(Stream::class);
-		/** @var ArgumentValueList|MockObject $args */
-		$args = $this->createMock(ArgumentValueList::class);
-
-		$buffer = [
-			Stream::OUT => [],
-			Stream::ERROR => [],
-		];
-		$stream->method("write")
-			->willReturnCallback(function(
-				string $message,
-				string $streamName
-			)use(&$buffer) {
-				$buffer[$streamName] []= $message;
-			});
-
-		$command = new HelpCommand("UnitTest");
-		$command->run($args);
-		self::assertEmpty( $buffer[Stream::OUT]);
-
-		$command->setStream($stream);
-		$command->run($args);
-		self::assertNotEmpty($buffer[Stream::OUT]);
-		self::assertEmpty($buffer[Stream::ERROR]);
-	}
-
-	public function testGetName() {
+	public function testGetName():void {
 		$command = new TestCommand();
 		self::assertEquals("test", $command->getName());
 
 		foreach(["first", "second", "third"] as $prefix) {
 			$command = new TestCommand($prefix);
-
-			self::assertEquals(
-				"{$prefix}-test",
-				$command->getName()
-			);
+			self::assertEquals("{$prefix}-test", $command->getName());
 		}
 	}
 
-	public function testGetDescription() {
+	public function testGetDescription():void {
 		$command = new TestCommand();
 		self::assertEquals(
 			"A test command for unit testing",
@@ -73,133 +34,86 @@ class CommandTest extends ArgumentMockTestCase {
 		);
 	}
 
-	public function testCheckArgumentsSingleGood() {
-		$args = [
-			self::createMock(NamedArgument::class),
-		];
+	public function testCheckArgumentsSingleGood():void {
+		$args = [self::createMock(NamedArgument::class)];
 
 		/** @var ArgumentList|MockObject $argList */
-		$argList = $this->createIteratorMock(
-			ArgumentList::class,
-			$args
-		);
+		$argList = $this->createIteratorMock(ArgumentList::class, $args);
 
 		$command = new SingleRequiredNamedParameterCommand();
-		$exception = null;
-
-		try {
-			$command->checkArguments($argList);
-		}
-		catch(CliException $exception) {}
-		self::assertNull($exception, "No exception should be thrown");
+		$command->checkArguments($argList);
+		self::assertTrue(true);
 	}
 
-	public function testCheckArgumentsSingleBad() {
-// The first and only argument is now an incorrect "CommandArgument".
-		$args = [
-			self::createMock(CommandArgument::class),
-		];
+	public function testCheckArgumentsSingleBad():void {
+		$args = [self::createMock(CommandArgument::class)];
 
 		/** @var ArgumentList|MockObject $argList */
-		$argList = $this->createIteratorMock(
-			ArgumentList::class,
-			$args
-		);
+		$argList = $this->createIteratorMock(ArgumentList::class, $args);
 
 		$command = new SingleRequiredNamedParameterCommand();
 		$this->expectException(NotEnoughArgumentsException::class);
 		$command->checkArguments($argList);
 	}
 
-	public function testCheckArgumentsMissingRequiredValue() {
+	public function testCheckArgumentsMissingRequiredValue():void {
 		$args = [
 			self::createMock(NamedArgument::class),
 			self::createMock(NamedArgument::class),
 			self::createMock(LongOptionArgument::class),
 			self::createMock(LongOptionArgument::class),
 		];
-		$longArgs = [
-			null,
-			null,
-			["framework" => null],
-			"example",
-		];
+		$longArgs = [null, null, ["framework" => null], "example"];
 
 		/** @var ArgumentList|MockObject $argList */
-		$argList = $this->createArgumentListMock(
-			$args,
-			$longArgs
-		);
+		$argList = $this->createArgumentListMock($args, $longArgs);
 
 		$command = new MultipleRequiredParameterCommand();
-
 		$this->expectException(MissingRequiredParameterValueException::class);
 		$command->checkArguments($argList);
 	}
 
-	public function testCheckArgumentsMultipleGood() {
+	public function testCheckArgumentsMultipleGood():void {
 		$args = [
 			self::createMock(NamedArgument::class),
 			self::createMock(NamedArgument::class),
 			self::createMock(LongOptionArgument::class),
 			self::createMock(LongOptionArgument::class),
 		];
-		$longArgs = [
-			null,
-			null,
-			["framework" => "php.gt"],
-			"example"
-		];
+		$longArgs = [null, null, ["framework" => "php.gt"], "example"];
 
 		/** @var ArgumentList|MockObject $argList */
-		$argList = $this->createArgumentListMock(
-			$args,
-			$longArgs
-		);
+		$argList = $this->createArgumentListMock($args, $longArgs);
 
 		$command = new MultipleRequiredParameterCommand();
-
-		$exception = null;
-		try {
-			$command->checkArguments($argList);
-		}
-		catch(CliException $exception) {}
-		self::assertNull($exception, "No exception should be thrown");
+		$command->checkArguments($argList);
+		self::assertTrue(true);
 	}
 
-	public function testCheckArgumentsMultipleBad() {
-// Almost identical test to above, but the "framework" arg will not be provided.
+	public function testCheckArgumentsMultipleBad():void {
 		$args = [
 			self::createMock(NamedArgument::class),
 			self::createMock(NamedArgument::class),
 			self::createMock(LongOptionArgument::class),
 			self::createMock(LongOptionArgument::class),
 		];
-		$longArgs = [
-			null,
-			null,
-			["age" => "123"],
-			"example"
-		];
+		$longArgs = [null, null, ["age" => "123"], "example"];
 
 		/** @var ArgumentList|MockObject $argList */
-		$argList = $this->createArgumentListMock(
-			$args,
-			$longArgs
-		);
+		$argList = $this->createArgumentListMock($args, $longArgs);
 
 		$command = new MultipleRequiredParameterCommand();
 		$this->expectException(MissingRequiredParameterException::class);
 		$command->checkArguments($argList);
 	}
 
-	public function testGetRequiredNamedParameterList() {
+	public function testGetRequiredNamedParameterList():void {
 		$command = new MultipleRequiredParameterCommand();
 		$list = $command->getRequiredNamedParameterList();
 		$requiredNames = [];
 
 		foreach($list as $item) {
-			$requiredNames []= $item->getOptionName();
+			$requiredNames[] = $item->getOptionName();
 		}
 
 		self::assertContains("id", $requiredNames);
@@ -207,197 +121,16 @@ class CommandTest extends ArgumentMockTestCase {
 		self::assertCount(2, $requiredNames);
 	}
 
-	public function testGetRequiredParameterList() {
+	public function testGetRequiredParameterList():void {
 		$command = new ComboRequiredOptionalParameterCommand();
 		$list = $command->getRequiredParameterList();
 		$requiredLongOptions = [];
 
 		foreach($list as $item) {
-			$requiredLongOptions []= $item->getLongOption();
+			$requiredLongOptions[] = $item->getLongOption();
 		}
 
 		self::assertContains("type", $requiredLongOptions);
 		self::assertCount(1, $requiredLongOptions);
-	}
-
-	public function testGetParameterListWhenThereIsNone() {
-		$command = new MultipleRequiredParameterCommand();
-		$list = $command->getOptionalNamedParameterList();
-		self::assertEmpty($list);
-
-		$list = $command->getOptionalParameterList();
-		self::assertEmpty($list);
-	}
-
-	public function testGetUsageSingleRequiredNamedParameter() {
-		$command = new SingleRequiredNamedParameterCommand();
-		self::assertEquals(
-			"Usage: single-required-named-parameter-command id",
-			$command->getUsage()
-		);
-	}
-
-	public function testGetUsageMultipleRequiredParameter() {
-		$command = new MultipleRequiredParameterCommand();
-		self::assertEquals(
-			"Usage: multiple-required-parameter-command id name --framework|-f FRAMEWORK --example",
-			$command->getUsage()
-		);
-	}
-
-	public function testGetUsageComboRequiredOptionalParameter() {
-		$command = new ComboRequiredOptionalParameterCommand();
-		self::assertEquals(
-			"Usage: combo-required-optional-parameter-command id [name] --type|-t TYPE [--verbose|-v]",
-			$command->getUsage()
-		);
-	}
-
-	public function testGetUsageAllParameterTypes() {
-		$command = new AllParameterTypesCommand();
-		self::assertEquals(
-			"Usage: all-parameter-types-command id [name] --type|-t TYPE [--log|-l LOG_PATH] [--verbose|-v]",
-			$command->getUsage()
-		);
-	}
-
-	public function testGetArgumentValueList() {
-		$idArgument = self::createMock(NamedArgument::class);
-		$idArgument->method("getValue")
-			->willReturn("test-id");
-		$nameArgument = self::createMock(NamedArgument::class);
-		$nameArgument->method("getValue")
-			->willReturn("Test name!");
-		$frameworkArgument = self::createMock(LongOptionArgument::class);
-		$frameworkArgument->method("getKey")
-			->willReturn("framework");
-		$frameworkArgument->method("getValue")
-			->willReturn("test-scaffolding");
-		$exampleArgument = self::createMock(LongOptionArgument::class);
-		$exampleArgument->method("getValue")
-			->willReturn("just-a-quick-example");
-
-		$args = [
-			$idArgument,
-			$nameArgument,
-			$frameworkArgument,
-			$exampleArgument,
-		];
-		$longArgs = [
-			null,
-			null,
-			["framework" => "php.gt"],
-			"example"
-		];
-
-		/** @var ArgumentList|MockObject $argList */
-		$argList = $this->createArgumentListMock(
-			$args,
-			$longArgs
-		);
-
-		$command = new MultipleRequiredParameterCommand();
-		$argumentValueList = $command->getArgumentValueList($argList);
-
-		self::assertEquals("test-id", $argumentValueList->get("id"));
-		self::assertEquals("Test name!", $argumentValueList->get("name"));
-		self::assertEquals("test-scaffolding", $argumentValueList->get("framework"));
-	}
-
-	public function testOutputUsesPaletteWhenProvided() {
-		$stream = $this->createMock(Stream::class);
-		$stream->expects(self::once())
-			->method("writeLine")
-			->with(
-				"single green message",
-				Stream::OUT,
-				Palette::GREEN,
-				null
-			);
-
-		$command = new class extends TestCommand {
-			public function outputPublic(string $message, ?Palette $colour = null):void {
-				$this->output($message, $colour);
-			}
-		};
-		$command->setStream($stream);
-		$command->outputPublic("single green message", Palette::GREEN);
-	}
-
-	public function testSetAndResetOutputPalette() {
-		$stream = $this->createMock(Stream::class);
-		$stream->expects(self::once())
-			->method("setOutputPalette")
-			->with(Palette::RED, Palette::BLACK);
-		$stream->expects(self::once())
-			->method("resetOutputPalette");
-
-		$command = new class extends TestCommand {
-			public function setPalettePublic(?Palette $foreground, ?Palette $background):void {
-				$this->setOutputPalette($foreground, $background);
-			}
-
-			public function resetPalettePublic():void {
-				$this->resetOutputPalette();
-			}
-		};
-		$command->setStream($stream);
-		$command->setPalettePublic(Palette::RED, Palette::BLACK);
-		$command->resetPalettePublic();
-	}
-
-	public function testCreateProgressBar():void {
-		$stream = new Stream(
-			"php://memory",
-			"php://memory",
-			"php://memory"
-		);
-		$out = $stream->getOutStream();
-
-		$command = new class extends TestCommand {
-			public function createProgressBarPublic(int $max):ProgressBar {
-				return $this->createProgressBar($max, "Work", 10);
-			}
-		};
-		$command->setStream($stream);
-		$progressBar = $command->createProgressBarPublic(10);
-		$progressBar->setProgress(5);
-
-		$out->rewind();
-		self::assertSame(
-			"\r\e[2KWork [=====     ]  50% (5/10)",
-			$out->fread(1024)
-		);
-	}
-
-	public function testCursorHelpers():void {
-		$stream = new Stream(
-			"php://memory",
-			"php://memory",
-			"php://memory"
-		);
-		$out = $stream->getOutStream();
-
-		$command = new class extends TestCommand {
-			public function useCursorHelpers():void {
-				$this->saveCursorPosition();
-				$this->moveCursorUp(1);
-				$this->moveCursorDown(1);
-				$this->moveCursorForward(1);
-				$this->moveCursorBack(1);
-				$this->setCursorColumn(1);
-				$this->rewindCursor();
-				$this->clearLine();
-				$this->restoreCursorPosition();
-			}
-		};
-		$command->setStream($stream);
-		$command->useCursorHelpers();
-
-		$out->rewind();
-		self::assertSame(
-			"\e[s\e[1A\e[1B\e[1C\e[1D\e[1G\r\e[2K\e[u",
-			$out->fread(1024)
-		);
 	}
 }

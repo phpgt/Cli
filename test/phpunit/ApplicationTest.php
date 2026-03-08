@@ -207,9 +207,10 @@ class ApplicationTest extends ArgumentMockTestCase {
 				$this->unitTestRequiredParams = $requiredParams;
 			}
 
-			public function run(?ArgumentValueList $arguments = null):int {
-				return 0;
-			}
+				public function run(?ArgumentValueList $arguments = null):int {
+					unset($arguments);
+					return 0;
+				}
 
 			public function getName():string {
 				return "example";
@@ -262,9 +263,10 @@ class ApplicationTest extends ArgumentMockTestCase {
 			->willReturn("example");
 
 		$command = new class extends Command {
-			public function run(?ArgumentValueList $arguments = null):int {
-				return 9;
-			}
+				public function run(?ArgumentValueList $arguments = null):int {
+					unset($arguments);
+					return 9;
+				}
 
 			public function getName():string {
 				return "example";

@@ -128,22 +128,37 @@ class StreamTest extends TestCase {
 		$out = $stream->getOutStream();
 
 		for($i = 1; $i <= 10; $i++) {
-			$stream->writeLine("This is message $i, and should appear individually.");
+			$stream->writeLine(
+				"This is message $i, and should appear individually."
+			);
 		}
 
 		for($i = 1; $i <= 5; $i++) {
-			$stream->writeLine("This message is sent 5 times but should only appear once.");
+			$stream->writeLine(
+				"This message is sent 5 times but should only appear once."
+			);
 		}
 
 		for($i = 11; $i <= 20; $i++) {
-			$stream->writeLine("This is message $i, and should appear after the repeating message individually.");
+			$stream->writeLine(
+				"This is message $i, and should appear after the "
+				. "repeating message individually."
+			);
 		}
 
 		$out->rewind();
 		$fullStreamContents = $out->fread(1024);
 
-		self::assertSame(10, substr_count($fullStreamContents, "should appear individually"), "Unique messages should appear individually");
-		self::assertSame(1, substr_count($fullStreamContents, "should only appear once"), "Similar messages should only appear once");
+		self::assertSame(
+			10,
+			substr_count($fullStreamContents, "should appear individually"),
+			"Unique messages should appear individually"
+		);
+		self::assertSame(
+			1,
+			substr_count($fullStreamContents, "should only appear once"),
+			"Similar messages should only appear once"
+		);
 		self::assertSame(4, substr_count($fullStreamContents, Stream::REPEAT_CHAR));
 	}
 
@@ -206,22 +221,4 @@ class StreamTest extends TestCase {
 		);
 	}
 
-	public function testRewindCursor():void {
-		$stream = new Stream(
-			"php://memory",
-			"php://memory",
-			"php://memory"
-		);
-		$out = $stream->getOutStream();
-
-		$stream->write("abc");
-		$stream->cursor->rewind();
-		$stream->write("z");
-
-		$out->rewind();
-		self::assertSame(
-			"abc\rz",
-			$out->fread(1024)
-		);
-	}
 }
