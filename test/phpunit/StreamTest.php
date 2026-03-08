@@ -11,7 +11,7 @@ class StreamTest extends TestCase {
 		$tmp = implode(DIRECTORY_SEPARATOR, [
 			sys_get_temp_dir(),
 			"phpgt",
-			"cli",
+			"cli-stream",
 		]);
 		if(!is_dir($tmp)) {
 			mkdir($tmp, 0775, true);
@@ -219,6 +219,19 @@ class StreamTest extends TestCase {
 			"\e[s\e[2A\e[3B\e[4C\e[5D\e[6G\e[2K\e[u",
 			$out->fread(1024)
 		);
+	}
+
+	public function testWrapInPaletteWithNoPaletteReturnsMessage():void {
+		$stream = new Stream(
+			"php://memory",
+			"php://memory",
+			"php://memory"
+		);
+		$reflection = new \ReflectionClass($stream);
+		$method = $reflection->getMethod("wrapInPalette");
+
+		$output = $method->invoke($stream, "plain", null, null);
+		self::assertSame("plain", $output);
 	}
 
 }

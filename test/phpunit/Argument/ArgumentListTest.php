@@ -15,6 +15,7 @@ class ArgumentListTest extends TestCase {
 			"second"
 		);
 
+		self::assertSame("script", $argumentList->getScript());
 		self::assertSame("command", $argumentList->getCommandName());
 
 		$actual = [];
