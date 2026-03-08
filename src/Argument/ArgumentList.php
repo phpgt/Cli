@@ -16,7 +16,7 @@ class ArgumentList implements Iterator {
 
 	public function __construct(string $script, string...$arguments) {
 		$this->script = $script;
-		$this->buildArgumentList($arguments);
+		$this->parseArguments($arguments);
 	}
 
 	public function getScript():string {
@@ -27,92 +27,10 @@ class ArgumentList implements Iterator {
 		return $this->argumentList[0]->getValue() ?? "";
 	}
 
-	/**
-	 * @param string[] $arguments
-	 * @SuppressWarnings(PHPMD.CyclomaticComplexity)
-	 */
-	protected function buildArgumentList(array $arguments):void {
-		if(isset($arguments[0])
-		&& $arguments[0][0] !== "-") {
-			$commandArgument = array_shift($arguments);
-			array_push(
-				$this->argumentList,
-				new CommandArgument($commandArgument)
-			);
-		}
-		else {
-			$defaultCommandArgument = new CommandArgument(
-				self::DEFAULT_COMMAND
-			);
-			array_push($this->argumentList, $defaultCommandArgument);
-		}
-
-		$skipNextArgument = false;
-
-		foreach ($arguments as $i => $arg) {
-			if($skipNextArgument) {
-				$skipNextArgument = false;
-				continue;
-			}
-
-			if ($arg[0] === "-") {
-				if(strstr($arg, "=")) {
-					$name = substr(
-						$arg,
-						0,
-						strpos(
-							$arg,
-							"="
-						) ?: 0
-					);
-
-					$value = substr(
-						$arg,
-						strpos(
-							$arg,
-							"="
-						) + 1
-					);
-				}
-				else {
-					$name = $arg;
-
-					$nextArgument = $arguments[$i + 1] ?? null;
-
-					if($nextArgument
-					&& strpos($nextArgument, "-") !== 0) {
-						$value = $arguments[$i + 1];
-						$skipNextArgument = true;
-					}
-					else {
-						$value = null;
-					}
-				}
-
-				if ($arg[1] === "-") {
-					array_push(
-						$this->argumentList,
-						new LongOptionArgument(
-							$name,
-							$value
-						)
-					);
-				}
-				else {
-					array_push($this->argumentList,
-						new ShortOptionArgument(
-							$arg,
-							$value
-						)
-					);
-				}
-			} else {
-				array_push(
-					$this->argumentList,
-					new NamedArgument($arg)
-				);
-			}
-		}
+	/** @param string[] $arguments */
+	protected function parseArguments(array $arguments):void {
+		$parser = new ArgumentParser();
+		$this->argumentList = $parser->parse($arguments);
 	}
 
 	/**

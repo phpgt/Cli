@@ -207,9 +207,10 @@ class ApplicationTest extends ArgumentMockTestCase {
 				$this->unitTestRequiredParams = $requiredParams;
 			}
 
-			public function run(?ArgumentValueList $arguments = null):int {
-				return 0;
-			}
+				public function run(?ArgumentValueList $arguments = null):int {
+					unset($arguments);
+					return 0;
+				}
 
 			public function getName():string {
 				return "example";
@@ -262,9 +263,10 @@ class ApplicationTest extends ArgumentMockTestCase {
 			->willReturn("example");
 
 		$command = new class extends Command {
-			public function run(?ArgumentValueList $arguments = null):int {
-				return 9;
-			}
+				public function run(?ArgumentValueList $arguments = null):int {
+					unset($arguments);
+					return 9;
+				}
 
 			public function getName():string {
 				return "example";
@@ -365,6 +367,63 @@ class ApplicationTest extends ArgumentMockTestCase {
 		self::assertStringNotContainsString(
 			"Command running successfully",
 			(string)file_get_contents($this->outPath)
+		);
+	}
+
+	public function testMissingRequiredParameterIsReportedByApplication():void {
+		$arguments = new ArgumentList(
+			"script-name",
+			"requires-parameter",
+			"--flag"
+		);
+
+		$command = new class extends Command {
+			public function run(?ArgumentValueList $arguments = null):int {
+				unset($arguments);
+				return 0;
+			}
+
+			public function getName():string {
+				return "requires-parameter";
+			}
+
+			public function getDescription():string {
+				return "Command requiring --required.";
+			}
+
+			public function getRequiredNamedParameterList():array {
+				return [];
+			}
+
+			public function getOptionalNamedParameterList():array {
+				return [];
+			}
+
+			public function getRequiredParameterList():array {
+				return [new Parameter(false, "required", "r")];
+			}
+
+			public function getOptionalParameterList():array {
+				return [new Parameter(false, "flag", "f")];
+			}
+		};
+
+		$actualExitCode = null;
+		$application = new Application("test-app", $arguments, $command);
+		$application->setStream(
+			$this->inPath,
+			$this->outPath,
+			$this->errPath
+		);
+		$application->setExitHandler(function(int $exitCode) use(&$actualExitCode) {
+			$actualExitCode = $exitCode;
+		});
+		$application->run();
+
+		self::assertSame(1, $actualExitCode);
+		self::assertStreamContains(
+			"Error - Missing required parameter: Error: required (r)",
+			Stream::ERROR
 		);
 	}
 

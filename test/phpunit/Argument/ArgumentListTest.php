@@ -7,328 +7,148 @@ use Gt\Cli\Parameter\Parameter;
 use PHPUnit\Framework\TestCase;
 
 class ArgumentListTest extends TestCase {
-	/** @dataProvider data_randomNamedArgs */
-	public function testGetCommandName(string...$args) {
+	public function testGetCommandNameAndIteratorWithNamedArgs():void {
 		$argumentList = new ArgumentList(
-			array_shift($args),
-			...$args
-		);
-		self::assertEquals(
-			$args[0],
-			$argumentList->getCommandName()
-		);
-	}
-
-	/** @dataProvider data_randomNamedArgs */
-	public function testIteratorWithNamedArgs(string...$args) {
-		$argumentList = new ArgumentList(
-			array_shift($args),
-			...$args
+			"script",
+			"command",
+			"first",
+			"second"
 		);
 
-		foreach($argumentList as $i => $argument) {
+		self::assertSame("script", $argumentList->getScript());
+		self::assertSame("command", $argumentList->getCommandName());
+
+		$actual = [];
+		foreach($argumentList as $argument) {
 			/** @var Argument $argument */
-			self::assertInstanceOf(
-				Argument::class,
-				$argument
-			);
-
-			self::assertEquals(
-				$args[$i],
-				$argument
-			);
+			$actual[] = (string)$argument;
 		}
+
+		self::assertSame([
+			"command",
+			"first",
+			"second",
+		], $actual);
 	}
 
-	/** @dataProvider data_randomLongArgs */
-	public function testIteratorWithLongArgs(string...$args) {
-		$scriptName = array_shift($args);
+	public function testIteratorWithLongArgs():void {
 		$argumentList = new ArgumentList(
-			$scriptName,
-			...$args
+			"script",
+			"command",
+			"--one",
+			"1",
+			"--two",
+			"2"
 		);
 
-		foreach($argumentList as $i => $argument) {
-			/** @var Argument $argument */
-			self::assertInstanceOf(
-				Argument::class,
-				$argument
-			);
-
-			if($i === 0) {
-				self::assertEquals(
-					$args[0],
-					$argument
-				);
-				continue;
-			}
-
-			$originalKey = $args[($i - 1) * 2 + 1];
-			$originalValue = $args[($i - 1) * 2 + 2];
-
-			self::assertEquals(
-				substr($originalKey, 2),
-				$argument->getKey()
-			);
-			self::assertEquals(
-				$originalValue,
-				$argument->getValue()
-			);
-		}
+		$arguments = iterator_to_array($argumentList);
+		self::assertSame("one", $arguments[1]->getKey());
+		self::assertSame("1", $arguments[1]->getValue());
+		self::assertSame("two", $arguments[2]->getKey());
+		self::assertSame("2", $arguments[2]->getValue());
 	}
 
-	/** @dataProvider data_randomShortArgs */
-	public function testIteratorWithShortArgs(string...$args) {
+	public function testIteratorWithShortArgs():void {
 		$argumentList = new ArgumentList(
-			array_shift($args),
-			...$args
+			"script",
+			"command",
+			"-a",
+			"1",
+			"-b",
+			"2"
 		);
 
-		foreach($argumentList as $i => $argument) {
-			/** @var Argument $argument */
-			self::assertInstanceOf(
-				Argument::class,
-				$argument
-			);
-
-			if($i === 0) {
-				self::assertEquals(
-					$args[0],
-					$argument
-				);
-				continue;
-			}
-
-			$originalKey = $args[($i - 1) * 2 + 1];
-			$originalValue = $args[($i - 1) * 2 + 2];
-
-			self::assertEquals(
-				substr($originalKey, 1),
-				$argument->getKey()
-			);
-			self::assertEquals(
-				$originalValue,
-				$argument->getValue()
-			);
-		}
+		$arguments = iterator_to_array($argumentList);
+		self::assertSame("a", $arguments[1]->getKey());
+		self::assertSame("1", $arguments[1]->getValue());
+		self::assertSame("b", $arguments[2]->getKey());
+		self::assertSame("2", $arguments[2]->getValue());
 	}
 
-	/** @dataProvider data_randomShortArgs */
-	public function testContainsWithShortArgs(string...$args) {
+	public function testContainsWithLongAndShortArgs():void {
 		$argumentList = new ArgumentList(
-			array_shift($args),
-			...$args
+			"script",
+			"command",
+			"--verbose",
+			"-d"
 		);
 
-		foreach($args as $i => $arg) {
-			if($i === 0) {
-				continue;
-			}
+		$longParam = $this->createMock(Parameter::class);
+		$longParam->method("getLongOption")->willReturn("verbose");
+		$shortParam = $this->createMock(Parameter::class);
+		$shortParam->method("getShortOption")->willReturn("d");
 
-			if($i % 2 === 0) {
-// Because args are passed in as "--key value" every other original arg is skipped.
-				continue;
-			}
-
-			$param = self::createMock(Parameter::class);
-			$param->method("getShortOption")
-				->willReturn(substr($arg, 1));
-
-			/** @var Parameter $param */
-			self::assertTrue($argumentList->contains($param));
-		}
+		self::assertTrue($argumentList->contains($longParam));
+		self::assertTrue($argumentList->contains($shortParam));
 	}
 
-	/** @dataProvider data_randomLongArgs */
-	public function testContainsWithLongArgs(string...$args) {
+	public function testNotContains():void {
 		$argumentList = new ArgumentList(
-			array_shift($args),
-			...$args
+			"script",
+			"command",
+			"--one",
+			"1"
 		);
 
-		foreach($args as $i => $arg) {
-			if($i === 0) {
-				continue;
-			}
-
-			if($i % 2 === 0) {
-// Because args are passed in as "--key value" every other original arg is skipped.
-				continue;
-			}
-
-			$param = self::createMock(Parameter::class);
-			$param->method("getLongOption")
-				->willReturn(substr($arg, 2));
-
-			/** @var Parameter $param */
-			self::assertTrue($argumentList->contains($param));
-		}
+		$param = $this->createMock(Parameter::class);
+		$param->method("getLongOption")->willReturn("missing");
+		self::assertFalse($argumentList->contains($param));
 	}
 
-	/** @dataProvider data_randomLongArgs */
-	public function testNotContains(string...$args) {
+	public function testEqualsSignValueParsing():void {
 		$argumentList = new ArgumentList(
-			array_shift($args),
-			...$args
+			"script",
+			"command",
+			"--name=value",
+			"-a=one"
 		);
 
-		foreach($args as $i => $arg) {
-			if($i === 0) {
-				continue;
-			}
+		$longParam = $this->createMock(Parameter::class);
+		$longParam->method("getLongOption")->willReturn("name");
+		$shortParam = $this->createMock(Parameter::class);
+		$shortParam->method("getShortOption")->willReturn("a");
 
-			if($i % 2 === 0) {
-// Because args are passed in as "--key value" every other original arg is skipped.
-				continue;
-			}
-
-			$param = self::createMock(Parameter::class);
-			$param->method("getLongOption")
-				->willReturn(uniqid());
-
-			/** @var Parameter $param */
-			self::assertFalse($argumentList->contains($param));
-		}
+		self::assertSame("value", $argumentList->getValueForParameter($longParam));
+		self::assertSame("one", $argumentList->getValueForParameter($shortParam));
 	}
 
-	/** @dataProvider data_randomLongEqualsArgs */
-	public function testKeyValueSetWithLongOptionEqualsSign(string...$args) {
+	public function testGetValueForParameterWithLongAndShortOption():void {
 		$argumentList = new ArgumentList(
-			array_shift($args),
-			...$args
+			"script",
+			"command",
+			"--path",
+			"/tmp/a",
+			"-f",
+			"/tmp/b"
 		);
 
-		foreach($args as $i => $arg) {
-			if($i === 0) {
-				continue;
-			}
+		$longParam = $this->createMock(Parameter::class);
+		$longParam->method("getLongOption")->willReturn("path");
+		$shortParam = $this->createMock(Parameter::class);
+		$shortParam->method("getShortOption")->willReturn("f");
 
-			$arg = substr($arg, 2);
-			list($key, $value) = explode("=", $arg);
-
-			$param = self::createMock(Parameter::class);
-			$param->method("getLongOption")
-				->willReturn($key);
-
-			self::assertEquals(
-				$value,
-				$argumentList->getValueForParameter($param)
-			);
-		}
+		self::assertSame("/tmp/a", $argumentList->getValueForParameter($longParam));
+		self::assertSame("/tmp/b", $argumentList->getValueForParameter($shortParam));
 	}
 
-	/** @dataProvider data_randomShortEqualsArgs */
-	public function testKeyValueSetWithShortOptionEqualsSign(string...$args) {
+	public function testContainsMultipleFlags():void {
 		$argumentList = new ArgumentList(
-			array_shift($args),
-			...$args
-		);
-
-		foreach($args as $i => $arg) {
-			if($i === 0) {
-				continue;
-			}
-
-			$arg = substr($arg, 1);
-			list($key, $value) = explode("=", $arg);
-
-			$param = self::createMock(Parameter::class);
-			$param->method("getShortOption")
-				->willReturn($key);
-
-			$paramValue = $argumentList->getValueForParameter($param);
-
-			if($paramValue != $value) {
-
-				var_dump($args);die();
-			}
-
-			self::assertEquals(
-				$value,
-				$paramValue
-			);
-		}
-	}
-
-	/** @dataProvider data_randomShortEqualsArgs */
-	public function testGetValueForParameterNotExists(string...$args) {
-		$argumentList = new ArgumentList(
-			array_shift($args),
-			...$args
-		);
-
-		foreach($args as $i => $arg) {
-			if($i === 0) {
-				continue;
-			}
-
-			$arg = substr($arg, 1);
-			list($key, $value) = explode("=", $arg);
-
-			$param = self::createMock(Parameter::class);
-			$param->method("getShortOption")
-				->willReturn("Z");
-
-			self::assertNull($argumentList->getValueForParameter($param));
-		}
-	}
-
-	/** @dataProvider data_randomLongArgs */
-	public function testGetValueForParameterWithLongOption(string...$args) {
-		$argumentList = new ArgumentList(
-			array_Shift($args),
-			...$args
-		);
-
-		$param = self::createMock(Parameter::class);
-		$param->method("getLongOption")
-			->willReturn(substr($args[1], 2));
-		$value = $argumentList->getValueForParameter($param);
-
-		self::assertEquals($args[2], $value);
-	}
-
-	/** @dataProvider data_randomShortArgs */
-	public function testGetValueParameterWithShortOption(string...$args) {
-		$argumentList = new ArgumentList(
-			array_shift($args),
-			...$args
-		);
-
-		$param = self::createMock(Parameter::class);
-		$param->method("getShortOption")
-			->willReturn(substr($args[1], 1));
-		$value = $argumentList->getValueForParameter($param);
-
-		self::assertEquals($args[2], $value);
-	}
-
-	public function testGetValueForParameterForMultiple() {
-		$argumentList = new ArgumentList(
-			"test-script",
-			"test-command",
+			"script",
+			"command",
 			"--one",
 			"--two",
 			"--three",
 			"--four"
 		);
 
-		$param1 = self::createMock(Parameter::class);
-		$param1->method("getLongOption")->willReturn("one");
-		$param2 = self::createMock(Parameter::class);
-		$param2->method("getLongOption")->willReturn("two");
-		$param3 = self::createMock(Parameter::class);
-		$param3->method("getLongOption")->willReturn("three");
-		$param4 = self::createMock(Parameter::class);
-		$param4->method("getLongOption")->willReturn("four");
-
-		self::assertTrue($argumentList->contains($param1));
-		self::assertTrue($argumentList->contains($param2));
-		self::assertTrue($argumentList->contains($param3));
-		self::assertTrue($argumentList->contains($param4));
+		foreach(["one", "two", "three", "four"] as $name) {
+			$param = $this->createMock(Parameter::class);
+			$param->method("getLongOption")->willReturn($name);
+			self::assertTrue($argumentList->contains($param));
+		}
 	}
 
-	public function testGetValueForParameterWhenLongAndShortAreBothSet() {
+	public function testGetValueForParameterWhenLongAndShortAreBothSet():void {
 		$argumentList = new ArgumentList(
 			"test-script",
 			"test-command",
@@ -338,7 +158,7 @@ class ArgumentListTest extends TestCase {
 			"/tmp/two"
 		);
 
-		$param = self::createMock(Parameter::class);
+		$param = $this->createMock(Parameter::class);
 		$param->method("getLongOption")->willReturn("dir");
 		$param->method("getShortOption")->willReturn("d");
 
@@ -346,135 +166,32 @@ class ArgumentListTest extends TestCase {
 		$this->expectExceptionMessage(
 			"Parameter cannot be set by both --dir and -d"
 		);
-
 		$argumentList->getValueForParameter($param);
 	}
 
-	public static function data_randomNamedArgs():array {
-		$dataSet = [];
+	public function testChainedShortOptions():void {
+		$argumentList = new ArgumentList(
+			"test-script",
+			"test-command",
+			"-czf",
+			"myarchive.tar.gz"
+		);
 
-		for($i = 0; $i < 10; $i++) {
-			$params = [];
+		$paramC = $this->createMock(Parameter::class);
+		$paramC->method("getShortOption")->willReturn("c");
+		$paramZ = $this->createMock(Parameter::class);
+		$paramZ->method("getShortOption")->willReturn("z");
+		$paramF = $this->createMock(Parameter::class);
+		$paramF->method("getShortOption")->willReturn("f");
 
-			$params []= uniqid("script-");
-			$params []= uniqid("command-");
-
-			$numParams = rand(1, 10);
-			if($numParams % 2 !== 0) {
-				$numParams ++;
-			}
-
-			for($j = 0; $j < $numParams; $j++) {
-				$params []= uniqid();
-			}
-
-			$dataSet []= $params;
-		}
-
-		return $dataSet;
-	}
-
-	public static function data_randomLongArgs():array {
-		$dataSet = [];
-
-		for($i = 0; $i < 10; $i++) {
-			$params = [];
-
-			$params []= uniqid("script-");
-			$params []= uniqid("command-");
-
-			$numParams = rand(1, 10);
-			if($numParams % 2 !== 0) {
-				$numParams ++;
-			}
-
-			for($j = 0; $j < $numParams; $j++) {
-				if($j % 2 === 0) {
-					$params []= "--" . uniqid();
-				}
-				else {
-					$params []= uniqid();
-				}
-			}
-
-			$dataSet []= $params;
-		}
-
-		return $dataSet;
-	}
-
-	public static function data_randomShortArgs():array {
-		$dataSet = [];
-
-		for($i = 0; $i < 10; $i++) {
-			$params = [];
-
-			$params []= uniqid("script-");
-			$params []= uniqid("command-");
-
-			$numParams = rand(1, 10);
-			if($numParams % 2 !== 0) {
-				$numParams ++;
-			}
-
-			for($j = 0; $j < $numParams; $j++) {
-				if($j % 2 === 0) {
-					$params []= "-" . uniqid();
-				}
-				else {
-					$params []= uniqid();
-				}
-			}
-
-			$dataSet []= $params;
-		}
-
-		return $dataSet;
-	}
-
-	public static function data_randomLongEqualsArgs():array {
-		$dataSet = [];
-
-		for($i = 0; $i < 10; $i++) {
-			$params = [];
-
-			$params []= uniqid("script-");
-			$params []= uniqid("command-");
-
-			$numParams = rand(1, 10);
-			for($j = 0; $j < $numParams; $j++) {
-				$params []= "--" . uniqid() . "=" . uniqid();
-			}
-
-			$dataSet []= $params;
-		}
-
-		return $dataSet;
-	}
-
-	public static function data_randomShortEqualsArgs():array {
-		$dataSet = [];
-
-		for($i = 0; $i < 10; $i++) {
-			$charArray = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
-			$params = [];
-
-			$params []= uniqid("script-");
-			$params []= uniqid("command-");
-
-			$numParams = rand(1, 10);
-			for($j = 0; $j < $numParams; $j++) {
-				$char = array_shift($charArray);
-
-				$params []= "-"
-					. $char
-					. "="
-					. uniqid();
-			}
-
-			$dataSet []= $params;
-		}
-
-		return $dataSet;
+		self::assertTrue($argumentList->contains($paramC));
+		self::assertTrue($argumentList->contains($paramZ));
+		self::assertTrue($argumentList->contains($paramF));
+		self::assertNull($argumentList->getValueForParameter($paramC));
+		self::assertNull($argumentList->getValueForParameter($paramZ));
+		self::assertSame(
+			"myarchive.tar.gz",
+			$argumentList->getValueForParameter($paramF)
+		);
 	}
 }

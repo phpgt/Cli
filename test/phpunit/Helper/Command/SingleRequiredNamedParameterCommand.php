@@ -8,6 +8,7 @@ use Gt\Cli\Parameter\Parameter;
 
 class SingleRequiredNamedParameterCommand extends Command {
 	public function run(?ArgumentValueList $arguments = null):int {
+		unset($arguments);
 		return 0;
 	}
 

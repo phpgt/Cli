@@ -126,24 +126,25 @@ class HelpCommand extends Command {
 	protected function getHelpForCommand(?string $commandName = null):string {
 		$output = "";
 
-		$command = null;
+		$matchedCommand = null;
 		foreach($this->applicationCommandList as $command) {
 			if($command->getName() !== $commandName) {
 				continue;
 			}
 
+			$matchedCommand = $command;
 			break;
 		}
 
-		if(!$command) {
+		if(!$matchedCommand) {
 			return "No help for command `$commandName`." . PHP_EOL;
 		}
 
-		$output .= $command->getName();
+		$output .= $matchedCommand->getName();
 		$output .= ": ";
-		$output .= $command->getDescription();
+		$output .= $matchedCommand->getDescription();
 		$output .= PHP_EOL;
-		$output .= $command->getUsage(true);
+		$output .= $matchedCommand->getUsage(true);
 
 		return $output;
 	}
