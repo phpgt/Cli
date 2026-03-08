@@ -328,6 +328,28 @@ class ArgumentListTest extends TestCase {
 		self::assertTrue($argumentList->contains($param4));
 	}
 
+	public function testGetValueForParameterWhenLongAndShortAreBothSet() {
+		$argumentList = new ArgumentList(
+			"test-script",
+			"test-command",
+			"--dir",
+			"/tmp/one",
+			"-d",
+			"/tmp/two"
+		);
+
+		$param = self::createMock(Parameter::class);
+		$param->method("getLongOption")->willReturn("dir");
+		$param->method("getShortOption")->willReturn("d");
+
+		$this->expectException(\LogicException::class);
+		$this->expectExceptionMessage(
+			"Parameter cannot be set by both --dir and -d"
+		);
+
+		$argumentList->getValueForParameter($param);
+	}
+
 	public static function data_randomNamedArgs():array {
 		$dataSet = [];
 
