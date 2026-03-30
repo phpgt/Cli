@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "phpgt/daemon",
-            "version": "v1.1.4",
+            "version": "v1.1.5",
             "source": {
                 "type": "git",
-                "url": "https://github.com/PhpGt/Daemon.git",
-                "reference": "4609225cf82a1f13a5f7364870a2b5f52c6a2529"
+                "url": "https://github.com/phpgt/Daemon.git",
+                "reference": "413e16b54de6e1fd5c2b646b485f88a86dfedd9a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/Daemon/zipball/4609225cf82a1f13a5f7364870a2b5f52c6a2529",
-                "reference": "4609225cf82a1f13a5f7364870a2b5f52c6a2529",
+                "url": "https://api.github.com/repos/phpgt/Daemon/zipball/413e16b54de6e1fd5c2b646b485f88a86dfedd9a",
+                "reference": "413e16b54de6e1fd5c2b646b485f88a86dfedd9a",
                 "shasum": ""
             },
             "require": {
@@ -39,8 +39,8 @@
             "notification-url": "https://packagist.org/downloads/",
             "description": "Background script execution with cross-platform compatible streaming.",
             "support": {
-                "issues": "https://github.com/PhpGt/Daemon/issues",
-                "source": "https://github.com/PhpGt/Daemon/tree/v1.1.4"
+                "issues": "https://github.com/phpgt/Daemon/issues",
+                "source": "https://github.com/phpgt/Daemon/tree/v1.1.5"
             },
             "funding": [
                 {
@@ -48,7 +48,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-05-16T08:42:54+00:00"
+            "time": "2026-03-11T14:11:10+00:00"
         }
     ],
     "packages-dev": [
