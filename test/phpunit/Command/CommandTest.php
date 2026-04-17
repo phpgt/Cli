@@ -12,6 +12,7 @@ use Gt\Cli\Test\Helper\ArgumentMockTestCase;
 use Gt\Cli\Test\Helper\Command\ComboRequiredOptionalParameterCommand;
 use Gt\Cli\Test\Helper\Command\MultipleRequiredParameterCommand;
 use Gt\Cli\Test\Helper\Command\SingleRequiredNamedParameterCommand;
+use Gt\Cli\Test\Helper\Command\SyncLikeCommand;
 use Gt\Cli\Test\Helper\Command\TestCommand;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -132,5 +133,61 @@ class CommandTest extends ArgumentMockTestCase {
 
 		self::assertContains("type", $requiredLongOptions);
 		self::assertCount(1, $requiredLongOptions);
+	}
+
+	public function testCheckArgumentsAllowsFlagBeforeNamedArguments():void {
+		$arguments = new ArgumentList(
+			"script",
+			"sync",
+			"--pattern",
+			"*",
+			"--symlink",
+			"path/to/source",
+			"path/to/dest"
+		);
+
+		$command = new SyncLikeCommand();
+		$command->checkArguments($arguments);
+		self::assertTrue(true);
+	}
+
+	public function testGetArgumentValueListAllowsFlagBeforeNamedArguments():void {
+		$arguments = new ArgumentList(
+			"script",
+			"sync",
+			"--pattern",
+			"*",
+			"--symlink",
+			"path/to/source",
+			"path/to/dest"
+		);
+
+		$command = new SyncLikeCommand();
+		$argumentValues = $command->getArgumentValueList($arguments);
+
+		self::assertSame("*", $argumentValues->get("pattern")->get());
+		self::assertNull($argumentValues->get("symlink")->get());
+		self::assertSame("path/to/source", $argumentValues->get("source")->get());
+		self::assertSame("path/to/dest", $argumentValues->get("dest")->get());
+	}
+
+	public function testGetArgumentValueListAllowsFlagBetweenNamedArguments():void {
+		$arguments = new ArgumentList(
+			"script",
+			"sync",
+			"path/to/source",
+			"--symlink",
+			"path/to/dest",
+			"--pattern",
+			"*"
+		);
+
+		$command = new SyncLikeCommand();
+		$argumentValues = $command->getArgumentValueList($arguments);
+
+		self::assertSame("*", $argumentValues->get("pattern")->get());
+		self::assertNull($argumentValues->get("symlink")->get());
+		self::assertSame("path/to/source", $argumentValues->get("source")->get());
+		self::assertSame("path/to/dest", $argumentValues->get("dest")->get());
 	}
 }
