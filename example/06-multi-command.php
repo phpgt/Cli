@@ -1,11 +1,11 @@
 <?php
-use Gt\Cli\Application;
-use Gt\Cli\Argument\ArgumentList;
-use Gt\Cli\Argument\ArgumentValueList;
-use Gt\Cli\Command\Command;
-use Gt\Cli\Command\CommandException;
-use Gt\Cli\Palette;
-use Gt\Cli\Parameter\NamedParameter;
+use GT\Cli\Application;
+use GT\Cli\Argument\ArgumentList;
+use GT\Cli\Argument\ArgumentValueList;
+use GT\Cli\Command\Command;
+use GT\Cli\Command\CommandException;
+use GT\Cli\Palette;
+use GT\Cli\Parameter\NamedParameter;
 
 chdir(dirname(__DIR__));
 require "vendor/autoload.php";

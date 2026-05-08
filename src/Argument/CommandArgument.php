@@ -1,5 +1,5 @@
 <?php
-namespace Gt\Cli\Argument;
+namespace GT\Cli\Argument;
 
 class CommandArgument extends Argument {
 	public function __construct(string $commandName) {

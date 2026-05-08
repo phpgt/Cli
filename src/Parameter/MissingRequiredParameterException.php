@@ -1,6 +1,6 @@
 <?php
-namespace Gt\Cli\Parameter;
+namespace GT\Cli\Parameter;
 
-use Gt\Cli\CliException;
+use GT\Cli\CliException;
 
 class MissingRequiredParameterException extends CliException {}

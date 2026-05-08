@@ -1,18 +1,18 @@
 <?php
-namespace Gt\Cli\Test\Command;
+namespace GT\Cli\Test\Command;
 
-use Gt\Cli\Argument\ArgumentList;
-use Gt\Cli\Argument\CommandArgument;
-use Gt\Cli\Argument\LongOptionArgument;
-use Gt\Cli\Argument\NamedArgument;
-use Gt\Cli\Argument\NotEnoughArgumentsException;
-use Gt\Cli\Parameter\MissingRequiredParameterException;
-use Gt\Cli\Parameter\MissingRequiredParameterValueException;
-use Gt\Cli\Test\Helper\ArgumentMockTestCase;
-use Gt\Cli\Test\Helper\Command\ComboRequiredOptionalParameterCommand;
-use Gt\Cli\Test\Helper\Command\MultipleRequiredParameterCommand;
-use Gt\Cli\Test\Helper\Command\SingleRequiredNamedParameterCommand;
-use Gt\Cli\Test\Helper\Command\TestCommand;
+use GT\Cli\Argument\ArgumentList;
+use GT\Cli\Argument\CommandArgument;
+use GT\Cli\Argument\LongOptionArgument;
+use GT\Cli\Argument\NamedArgument;
+use GT\Cli\Argument\NotEnoughArgumentsException;
+use GT\Cli\Parameter\MissingRequiredParameterException;
+use GT\Cli\Parameter\MissingRequiredParameterValueException;
+use GT\Cli\Test\Helper\ArgumentMockTestCase;
+use GT\Cli\Test\Helper\Command\ComboRequiredOptionalParameterCommand;
+use GT\Cli\Test\Helper\Command\MultipleRequiredParameterCommand;
+use GT\Cli\Test\Helper\Command\SingleRequiredNamedParameterCommand;
+use GT\Cli\Test\Helper\Command\TestCommand;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class CommandTest extends ArgumentMockTestCase {

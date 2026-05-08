@@ -1,20 +1,20 @@
 <?php
-namespace Gt\Cli\Command;
+namespace GT\Cli\Command;
 
-use Gt\Cli\Argument\Argument;
-use Gt\Cli\Argument\ArgumentList;
-use Gt\Cli\Argument\ArgumentValueList;
-use Gt\Cli\Argument\CommandArgument;
-use Gt\Cli\Argument\NamedArgument;
-use Gt\Cli\Argument\NotEnoughArgumentsException;
-use Gt\Cli\Parameter\MissingRequiredParameterException;
-use Gt\Cli\Parameter\MissingRequiredParameterValueException;
-use Gt\Cli\Parameter\NamedParameter;
-use Gt\Cli\Parameter\Parameter;
-use Gt\Cli\Parameter\UserParameter;
-use Gt\Cli\Palette;
-use Gt\Cli\ProgressBar;
-use Gt\Cli\Stream;
+use GT\Cli\Argument\Argument;
+use GT\Cli\Argument\ArgumentList;
+use GT\Cli\Argument\ArgumentValueList;
+use GT\Cli\Argument\CommandArgument;
+use GT\Cli\Argument\NamedArgument;
+use GT\Cli\Argument\NotEnoughArgumentsException;
+use GT\Cli\Parameter\MissingRequiredParameterException;
+use GT\Cli\Parameter\MissingRequiredParameterValueException;
+use GT\Cli\Parameter\NamedParameter;
+use GT\Cli\Parameter\Parameter;
+use GT\Cli\Parameter\UserParameter;
+use GT\Cli\Palette;
+use GT\Cli\ProgressBar;
+use GT\Cli\Stream;
 
 /** @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)

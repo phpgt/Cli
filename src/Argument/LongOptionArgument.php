@@ -1,5 +1,5 @@
 <?php
-namespace Gt\Cli\Argument;
+namespace GT\Cli\Argument;
 
 class LongOptionArgument extends Argument {
 	protected function processRawKey(string $rawKey):string {

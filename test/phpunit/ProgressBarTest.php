@@ -1,8 +1,8 @@
 <?php
-namespace Gt\Cli\Test;
+namespace GT\Cli\Test;
 
-use Gt\Cli\ProgressBar;
-use Gt\Cli\Stream;
+use GT\Cli\ProgressBar;
+use GT\Cli\Stream;
 use PHPUnit\Framework\TestCase;
 
 class ProgressBarTest extends TestCase {

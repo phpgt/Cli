@@ -1,10 +1,10 @@
 <?php
-namespace Gt\Cli\Command;
+namespace GT\Cli\Command;
 
 use Composer\InstalledVersions;
-use Gt\Cli\Argument\ArgumentValueList;
-use Gt\Cli\Parameter\NamedParameter;
-use Gt\Cli\Parameter\Parameter;
+use GT\Cli\Argument\ArgumentValueList;
+use GT\Cli\Parameter\NamedParameter;
+use GT\Cli\Parameter\Parameter;
 
 class VersionCommand extends Command {
 	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter

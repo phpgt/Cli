@@ -1,7 +1,7 @@
 <?php
-namespace Gt\Cli\Command;
+namespace GT\Cli\Command;
 
-use Gt\Cli\CliException;
+use GT\Cli\CliException;
 
 class InvalidCommandException extends CliException {
 	public function __construct(string $message) {

@@ -1,9 +1,9 @@
 <?php
-namespace Gt\Cli\Test;
+namespace GT\Cli\Test;
 
-use Gt\Cli\InvalidStreamNameException;
-use Gt\Cli\Palette;
-use Gt\Cli\Stream;
+use GT\Cli\InvalidStreamNameException;
+use GT\Cli\Palette;
+use GT\Cli\Stream;
 use PHPUnit\Framework\TestCase;
 
 class StreamTest extends TestCase {

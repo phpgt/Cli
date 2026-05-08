@@ -1,5 +1,5 @@
 <?php
-namespace Gt\Cli\Argument;
+namespace GT\Cli\Argument;
 
 use Iterator;
 

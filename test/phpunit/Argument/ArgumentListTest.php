@@ -1,9 +1,9 @@
 <?php
-namespace Gt\Cli\Test\Argument;
+namespace GT\Cli\Test\Argument;
 
-use Gt\Cli\Argument\Argument;
-use Gt\Cli\Argument\ArgumentList;
-use Gt\Cli\Parameter\Parameter;
+use GT\Cli\Argument\Argument;
+use GT\Cli\Argument\ArgumentList;
+use GT\Cli\Parameter\Parameter;
 use PHPUnit\Framework\TestCase;
 
 class ArgumentListTest extends TestCase {

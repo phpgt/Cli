@@ -1,12 +1,12 @@
 <?php
-namespace Gt\Cli;
+namespace GT\Cli;
 
 use Exception;
-use Gt\Cli\Argument\NotEnoughArgumentsException;
-use Gt\Cli\Command\CommandException;
-use Gt\Cli\Command\InvalidCommandException;
-use Gt\Cli\Parameter\MissingRequiredParameterException;
-use Gt\Cli\Parameter\MissingRequiredParameterValueException;
+use GT\Cli\Argument\NotEnoughArgumentsException;
+use GT\Cli\Command\CommandException;
+use GT\Cli\Command\InvalidCommandException;
+use GT\Cli\Parameter\MissingRequiredParameterException;
+use GT\Cli\Parameter\MissingRequiredParameterValueException;
 
 class ErrorCode {
 	const DEFAULT_CODE = 1000;

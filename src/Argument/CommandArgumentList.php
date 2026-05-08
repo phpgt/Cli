@@ -1,6 +1,6 @@
 <?php
 
-namespace Gt\Cli\Argument;
+namespace GT\Cli\Argument;
 
 class CommandArgumentList extends ArgumentList {
 	public function __construct(

@@ -1,5 +1,5 @@
 <?php
-namespace Gt\Cli;
+namespace GT\Cli;
 
 class ProgressBar {
 	private Stream $stream;

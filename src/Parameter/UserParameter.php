@@ -1,4 +1,4 @@
 <?php
-namespace Gt\Cli\Parameter;
+namespace GT\Cli\Parameter;
 
 class UserParameter extends Parameter {}
