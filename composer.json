@@ -26,7 +26,7 @@
 	"authors": [
 		{
 			"name": "Greg Bowler",
-			"email": "greg.bowler@g105b.com"
+			"email": "greg@g105b.com"
 		}
 	],
 
@@ -57,7 +57,7 @@
 	"funding": [
 		{
 			"type": "github",
-			"url": "https://github.com/sponsors/PhpGt"
+			"url": "https://github.com/sponsors/phpgt"
 		}
 	]
 }
