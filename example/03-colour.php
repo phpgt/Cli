@@ -1,9 +1,9 @@
 <?php
-use Gt\Cli\Application;
-use Gt\Cli\Argument\ArgumentValueList;
-use Gt\Cli\Argument\CommandArgumentList;
-use Gt\Cli\Command\Command;
-use Gt\Cli\Palette;
+use GT\Cli\Application;
+use GT\Cli\Argument\ArgumentValueList;
+use GT\Cli\Argument\CommandArgumentList;
+use GT\Cli\Command\Command;
+use GT\Cli\Palette;
 
 chdir(dirname(__DIR__));
 require "vendor/autoload.php";

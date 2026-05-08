@@ -1,6 +1,6 @@
 <?php
-namespace Gt\Cli\Command;
+namespace GT\Cli\Command;
 
-use Gt\Cli\CliException;
+use GT\Cli\CliException;
 
 class CommandException extends CliException {}

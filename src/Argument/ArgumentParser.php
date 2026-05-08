@@ -1,5 +1,5 @@
 <?php
-namespace Gt\Cli\Argument;
+namespace GT\Cli\Argument;
 
 class ArgumentParser {
 	/**

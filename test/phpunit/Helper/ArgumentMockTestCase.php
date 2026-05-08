@@ -1,9 +1,9 @@
 <?php
-namespace Gt\Cli\Test\Helper;
+namespace GT\Cli\Test\Helper;
 
 use ArrayIterator;
-use Gt\Cli\Argument\ArgumentList;
-use Gt\Cli\Parameter\Parameter;
+use GT\Cli\Argument\ArgumentList;
+use GT\Cli\Parameter\Parameter;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 

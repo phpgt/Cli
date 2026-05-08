@@ -1,5 +1,5 @@
 <?php
-namespace Gt\Cli;
+namespace GT\Cli;
 
 enum Palette:int {
 	case BLACK = 0;

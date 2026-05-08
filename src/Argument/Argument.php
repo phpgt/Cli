@@ -1,5 +1,5 @@
 <?php
-namespace Gt\Cli\Argument;
+namespace GT\Cli\Argument;
 
 abstract class Argument {
 	const USER_DATA = "__user-data__";

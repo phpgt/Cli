@@ -1,5 +1,5 @@
 <?php
-namespace Gt\Cli;
+namespace GT\Cli;
 
 use SplFileObject;
 

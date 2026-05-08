@@ -1,18 +1,18 @@
 <?php
-namespace Gt\Cli\Test;
+namespace GT\Cli\Test;
 
-use Gt\Cli\Application;
-use Gt\Cli\Argument\ArgumentList;
-use Gt\Cli\Argument\ArgumentValueList;
-use Gt\Cli\Argument\LongOptionArgument;
-use Gt\Cli\Argument\NamedArgument;
-use Gt\Cli\Argument\NotEnoughArgumentsException;
-use Gt\Cli\Command\Command;
-use Gt\Cli\Parameter\NamedParameter;
-use Gt\Cli\Parameter\Parameter;
-use Gt\Cli\Stream;
-use Gt\Cli\Test\Helper\ArgumentMockTestCase;
-use Gt\Cli\Test\Helper\Command\TestCommand;
+use GT\Cli\Application;
+use GT\Cli\Argument\ArgumentList;
+use GT\Cli\Argument\ArgumentValueList;
+use GT\Cli\Argument\LongOptionArgument;
+use GT\Cli\Argument\NamedArgument;
+use GT\Cli\Argument\NotEnoughArgumentsException;
+use GT\Cli\Command\Command;
+use GT\Cli\Parameter\NamedParameter;
+use GT\Cli\Parameter\Parameter;
+use GT\Cli\Stream;
+use GT\Cli\Test\Helper\ArgumentMockTestCase;
+use GT\Cli\Test\Helper\Command\TestCommand;
 use PHPUnit\Framework\MockObject\MockObject;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;

@@ -1,10 +1,10 @@
 <?php
-namespace Gt\Cli\Test\Helper\Command;
+namespace GT\Cli\Test\Helper\Command;
 
-use Gt\Cli\Argument\ArgumentValueList;
-use Gt\Cli\Command\Command;
-use Gt\Cli\Parameter\NamedParameter;
-use Gt\Cli\Parameter\Parameter;
+use GT\Cli\Argument\ArgumentValueList;
+use GT\Cli\Command\Command;
+use GT\Cli\Parameter\NamedParameter;
+use GT\Cli\Parameter\Parameter;
 
 class TestCommand extends Command {
 	protected $prefix;

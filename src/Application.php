@@ -1,14 +1,14 @@
 <?php
-namespace Gt\Cli;
+namespace GT\Cli;
 
 use Composer\InstalledVersions;
-use Gt\Cli\Argument\ArgumentValueList;
-use Gt\Cli\Command\Command;
-use Gt\Cli\Command\HelpCommand;
-use Gt\Cli\Command\InvalidCommandException;
-use Gt\Cli\Command\VersionCommand;
-use Gt\Cli\Parameter\MissingRequiredParameterException;
-use Gt\Cli\Argument\ArgumentList;
+use GT\Cli\Argument\ArgumentValueList;
+use GT\Cli\Command\Command;
+use GT\Cli\Command\HelpCommand;
+use GT\Cli\Command\InvalidCommandException;
+use GT\Cli\Command\VersionCommand;
+use GT\Cli\Parameter\MissingRequiredParameterException;
+use GT\Cli\Argument\ArgumentList;
 
 class Application {
 	protected string $description;

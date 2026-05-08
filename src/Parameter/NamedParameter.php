@@ -1,5 +1,5 @@
 <?php
-namespace Gt\Cli\Parameter;
+namespace GT\Cli\Parameter;
 
 class NamedParameter extends Parameter {
 	/** @noinspection PhpMissingParentConstructorInspection */

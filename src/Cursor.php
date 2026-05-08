@@ -1,5 +1,5 @@
 <?php
-namespace Gt\Cli;
+namespace GT\Cli;
 
 class Cursor {
 	private Stream $stream;

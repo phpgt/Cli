@@ -1,9 +1,9 @@
 <?php
-namespace Gt\Cli\Test\Argument;
+namespace GT\Cli\Test\Argument;
 
-use Gt\Cli\Argument\LongOptionArgument;
-use Gt\Cli\Argument\NamedArgument;
-use Gt\Cli\Argument\ShortOptionArgument;
+use GT\Cli\Argument\LongOptionArgument;
+use GT\Cli\Argument\NamedArgument;
+use GT\Cli\Argument\ShortOptionArgument;
 use PHPUnit\Framework\TestCase;
 
 class ArgumentTest extends TestCase {

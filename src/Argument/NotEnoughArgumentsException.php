@@ -1,7 +1,7 @@
 <?php
-namespace Gt\Cli\Argument;
+namespace GT\Cli\Argument;
 
-use Gt\Cli\CliException;
+use GT\Cli\CliException;
 
 class NotEnoughArgumentsException extends CliException {
 	public function __construct(string $message) {

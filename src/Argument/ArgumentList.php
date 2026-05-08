@@ -1,7 +1,7 @@
 <?php
-namespace Gt\Cli\Argument;
+namespace GT\Cli\Argument;
 
-use Gt\Cli\Parameter\Parameter;
+use GT\Cli\Parameter\Parameter;
 use Iterator;
 use LogicException;
 

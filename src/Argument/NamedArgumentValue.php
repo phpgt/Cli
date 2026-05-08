@@ -1,4 +1,4 @@
 <?php
-namespace Gt\Cli\Argument;
+namespace GT\Cli\Argument;
 
 class NamedArgumentValue extends ArgumentValue {}

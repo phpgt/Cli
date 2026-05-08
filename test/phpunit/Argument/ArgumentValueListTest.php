@@ -1,11 +1,11 @@
 <?php
 
-namespace Gt\Cli\Test\Argument;
+namespace GT\Cli\Test\Argument;
 
-use Gt\Cli\Argument\Argument;
-use Gt\Cli\Argument\ArgumentValueList;
-use Gt\Cli\Argument\ArgumentValueListNotSetException;
-use Gt\Cli\Argument\NamedArgumentValue;
+use GT\Cli\Argument\Argument;
+use GT\Cli\Argument\ArgumentValueList;
+use GT\Cli\Argument\ArgumentValueListNotSetException;
+use GT\Cli\Argument\NamedArgumentValue;
 use PHPUnit\Framework\TestCase;
 
 class ArgumentValueListTest extends TestCase {
