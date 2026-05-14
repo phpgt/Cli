@@ -7,7 +7,7 @@ class ProgressBar {
 	private int $width;
 	private int $current;
 	private string $label;
-	private string $streamName;
+	private StreamName $streamName;
 	private bool $complete;
 
 	public function __construct(
@@ -15,7 +15,7 @@ class ProgressBar {
 		int $max = 100,
 		string $label = "Progress",
 		int $width = 40,
-		string $streamName = Stream::OUT
+		StreamName $streamName = StreamName::OUT
 	) {
 		$this->stream = $stream;
 		$this->max = max(1, $max);

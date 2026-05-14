@@ -6,6 +6,7 @@ use GT\Cli\Command\HelpCommand;
 use GT\Cli\Palette;
 use GT\Cli\ProgressBar;
 use GT\Cli\Stream;
+use GT\Cli\StreamName;
 use GT\Cli\Test\Helper\ArgumentMockTestCase;
 use GT\Cli\Test\Helper\Command\TestCommand;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -18,25 +19,25 @@ class CommandOutputTest extends ArgumentMockTestCase {
 		$args = $this->createMock(ArgumentValueList::class);
 
 		$buffer = [
-			Stream::OUT => [],
-			Stream::ERROR => [],
+			StreamName::OUT->value => [],
+			StreamName::ERROR->value => [],
 		];
 		$stream->method("write")
 			->willReturnCallback(function(
 				string $message,
-				string $streamName
+				StreamName $streamName
 			)use(&$buffer) {
-				$buffer[$streamName][] = $message;
+				$buffer[$streamName->value][] = $message;
 			});
 
 		$command = new HelpCommand("UnitTest");
 		$command->run($args);
-		self::assertEmpty($buffer[Stream::OUT]);
+		self::assertEmpty($buffer[StreamName::OUT->value]);
 
 		$command->setStream($stream);
 		$command->run($args);
-		self::assertNotEmpty($buffer[Stream::OUT]);
-		self::assertEmpty($buffer[Stream::ERROR]);
+		self::assertNotEmpty($buffer[StreamName::OUT->value]);
+		self::assertEmpty($buffer[StreamName::ERROR->value]);
 	}
 
 	public function testOutputUsesPaletteWhenProvided():void {
@@ -45,7 +46,7 @@ class CommandOutputTest extends ArgumentMockTestCase {
 			->method("writeLine")
 			->with(
 				"single green message",
-				Stream::OUT,
+				StreamName::OUT,
 				Palette::GREEN,
 				null
 			);

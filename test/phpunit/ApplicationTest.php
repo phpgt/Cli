@@ -10,7 +10,7 @@ use GT\Cli\Argument\NotEnoughArgumentsException;
 use GT\Cli\Command\Command;
 use GT\Cli\Parameter\NamedParameter;
 use GT\Cli\Parameter\Parameter;
-use GT\Cli\Stream;
+use GT\Cli\StreamName;
 use GT\Cli\Test\Helper\ArgumentMockTestCase;
 use GT\Cli\Test\Helper\Command\TestCommand;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -33,9 +33,18 @@ class ApplicationTest extends ArgumentMockTestCase {
 			mkdir($this->tmp, 0775, true);
 		}
 
-		$this->inPath = implode(DIRECTORY_SEPARATOR, [$this->tmp, Stream::IN]);
-		$this->outPath = implode(DIRECTORY_SEPARATOR, [$this->tmp, Stream::OUT]);
-		$this->errPath = implode(DIRECTORY_SEPARATOR, [$this->tmp, STREAM::ERROR]);
+		$this->inPath = implode(
+			DIRECTORY_SEPARATOR,
+			[$this->tmp, StreamName::IN->value]
+		);
+		$this->outPath = implode(
+			DIRECTORY_SEPARATOR,
+			[$this->tmp, StreamName::OUT->value]
+		);
+		$this->errPath = implode(
+			DIRECTORY_SEPARATOR,
+			[$this->tmp, StreamName::ERROR->value]
+		);
 		touch($this->inPath);
 		touch($this->outPath);
 		touch($this->errPath);
@@ -73,9 +82,9 @@ class ApplicationTest extends ArgumentMockTestCase {
 
 		self::assertStreamContains(
 			"Application has received no commands",
-			Stream::ERROR
+			StreamName::ERROR
 		);
-		self::assertStreamEmpty(Stream::OUT);
+		self::assertStreamEmpty(StreamName::OUT);
 	}
 
 	public function testCommandArgumentInvalid() {
@@ -98,7 +107,7 @@ class ApplicationTest extends ArgumentMockTestCase {
 
 		self::assertStreamContains(
 			"Invalid command: \"test-command\"",
-			Stream::ERROR
+			StreamName::ERROR
 		);
 	}
 
@@ -126,7 +135,7 @@ class ApplicationTest extends ArgumentMockTestCase {
 
 		self::assertStreamContains(
 			"Usage: invalid-test",
-			Stream::ERROR
+			StreamName::ERROR
 		);
 		self::assertSame(1, $actualErrCode);
 	}
@@ -171,27 +180,27 @@ class ApplicationTest extends ArgumentMockTestCase {
 		);
 		$application->run();
 
-		self::assertStreamEmpty(Stream::ERROR);
+		self::assertStreamEmpty(StreamName::ERROR);
 
 		self::assertStreamContains(
 			"Command ID: abcde",
-			Stream::OUT
+			StreamName::OUT
 		);
 		self::assertStreamContains(
 			"Command running successfully",
-			Stream::OUT
+			StreamName::OUT
 		);
 		self::assertStreamContains(
 			"No Option set",
-			Stream::OUT
+			StreamName::OUT
 		);
 		self::assertStreamContains(
 			"Must-have-value: 1234",
-			Stream::OUT
+			StreamName::OUT
 		);
 		self::assertStreamContains(
 			"No-value argument not set",
-			Stream::OUT
+			StreamName::OUT
 		);
 	}
 
@@ -252,7 +261,7 @@ class ApplicationTest extends ArgumentMockTestCase {
 		self::assertSame(1, $actualErrorCode);
 		self::assertStreamContains(
 			"Error: Not enough arguments passed. Passed: 0 required: 1.",
-			Stream::ERROR
+			StreamName::ERROR
 		);
 	}
 
@@ -334,9 +343,9 @@ class ApplicationTest extends ArgumentMockTestCase {
 		self::assertSame(0, $actualExitCode);
 		self::assertStreamContains(
 			"valid-test: A test command for unit testing",
-			Stream::OUT
+			StreamName::OUT
 		);
-		self::assertStreamEmpty(Stream::ERROR);
+		self::assertStreamEmpty(StreamName::ERROR);
 	}
 
 	public function testExitCodeReturnedFromVersionFlag():void {
@@ -363,7 +372,7 @@ class ApplicationTest extends ArgumentMockTestCase {
 		$application->run();
 
 		self::assertSame(0, $actualExitCode);
-		self::assertStreamEmpty(Stream::ERROR);
+		self::assertStreamEmpty(StreamName::ERROR);
 		self::assertStringNotContainsString(
 			"Command running successfully",
 			(string)file_get_contents($this->outPath)
@@ -423,13 +432,13 @@ class ApplicationTest extends ArgumentMockTestCase {
 		self::assertSame(1, $actualExitCode);
 		self::assertStreamContains(
 			"Error - Missing required parameter: Error: required (r)",
-			Stream::ERROR
+			StreamName::ERROR
 		);
 	}
 
 	protected function assertStreamContains(
 		string $message,
-		string $streamName
+		StreamName $streamName
 	):void {
 		$streamPath = $this->getStreamPathByName($streamName);
 		$streamContents = file_get_contents($streamPath);
@@ -441,17 +450,17 @@ class ApplicationTest extends ArgumentMockTestCase {
 	}
 
 	protected function assertStreamEmpty(
-		string $streamName
+		StreamName $streamName
 	):void {
 		$streamPath = $this->getStreamPathByName($streamName);
 		$streamContents = trim(file_get_contents($streamPath));
 		self::assertEmpty($streamContents, "Contents: \"$streamContents\"");
 	}
 
-	protected function getStreamPathByName(string $name):string {
+	protected function getStreamPathByName(StreamName $name):string {
 		return implode(DIRECTORY_SEPARATOR, [
 			$this->tmp,
-			$name,
+			$name->value,
 		]);
 	}
 }

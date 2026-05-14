@@ -4,9 +4,6 @@ namespace GT\Cli;
 use SplFileObject;
 
 class Stream {
-	const IN = "in";
-	const OUT = "out";
-	const ERROR = "error";
 	const REPEAT_CHAR = "⟲";
 	const ANSI_ESCAPE = "\033[";
 	const CARRIAGE_RETURN = "\r";
@@ -71,7 +68,7 @@ class Stream {
 		return $this->error;
 	}
 
-	public function readLine(string $streamName = self::IN):string {
+	public function readLine(StreamName $streamName = StreamName::IN):string {
 		$stream = $this->getNamedStream($streamName);
 		$buffer = "";
 
@@ -85,7 +82,7 @@ class Stream {
 
 	public function write(
 		string $message,
-		string $streamName = self::OUT,
+		StreamName $streamName = StreamName::OUT,
 		?Palette $foreground = null,
 		?Palette $background = null,
 	):void {
@@ -105,7 +102,7 @@ class Stream {
 
 	public function writeLine(
 		string $message = "",
-		string $streamName = self::OUT,
+		StreamName $streamName = StreamName::OUT,
 		?Palette $foreground = null,
 		?Palette $background = null,
 	):void {
@@ -150,17 +147,15 @@ class Stream {
 		$this->outputBackground = null;
 	}
 
-	protected function getNamedStream(string $streamName):SplFileObject {
+	protected function getNamedStream(StreamName $streamName):SplFileObject {
 		switch($streamName) {
-		case self::IN:
+		case StreamName::IN:
 			return $this->in;
-		case self::OUT:
+		case StreamName::OUT:
 			return $this->out;
-		case self::ERROR:
+		case StreamName::ERROR:
 			return $this->error;
 		}
-
-		throw new InvalidStreamNameException($streamName);
 	}
 
 	private function wrapInPalette(

@@ -8,17 +8,21 @@ class Cursor {
 		$this->stream = $stream;
 	}
 
-	public function savePosition(string $streamName = Stream::OUT):void {
+	public function savePosition(
+		StreamName $streamName = StreamName::OUT
+	):void {
 		$this->stream->write(Stream::ANSI_ESCAPE . "s", $streamName);
 	}
 
-	public function restorePosition(string $streamName = Stream::OUT):void {
+	public function restorePosition(
+		StreamName $streamName = StreamName::OUT
+	):void {
 		$this->stream->write(Stream::ANSI_ESCAPE . "u", $streamName);
 	}
 
 	public function moveUp(
 		int $amount = 1,
-		string $streamName = Stream::OUT
+		StreamName $streamName = StreamName::OUT
 	):void {
 		$this->stream->write(
 			Stream::ANSI_ESCAPE . max(1, $amount) . "A",
@@ -28,7 +32,7 @@ class Cursor {
 
 	public function moveDown(
 		int $amount = 1,
-		string $streamName = Stream::OUT
+		StreamName $streamName = StreamName::OUT
 	):void {
 		$this->stream->write(
 			Stream::ANSI_ESCAPE . max(1, $amount) . "B",
@@ -38,7 +42,7 @@ class Cursor {
 
 	public function moveForward(
 		int $amount = 1,
-		string $streamName = Stream::OUT
+		StreamName $streamName = StreamName::OUT
 	):void {
 		$this->stream->write(
 			Stream::ANSI_ESCAPE . max(1, $amount) . "C",
@@ -48,7 +52,7 @@ class Cursor {
 
 	public function moveBack(
 		int $amount = 1,
-		string $streamName = Stream::OUT
+		StreamName $streamName = StreamName::OUT
 	):void {
 		$this->stream->write(
 			Stream::ANSI_ESCAPE . max(1, $amount) . "D",
@@ -58,7 +62,7 @@ class Cursor {
 
 	public function setColumn(
 		int $column = 1,
-		string $streamName = Stream::OUT
+		StreamName $streamName = StreamName::OUT
 	):void {
 		$this->stream->write(
 			Stream::ANSI_ESCAPE . max(1, $column) . "G",
@@ -66,11 +70,11 @@ class Cursor {
 		);
 	}
 
-	public function rewind(string $streamName = Stream::OUT):void {
+	public function rewind(StreamName $streamName = StreamName::OUT):void {
 		$this->stream->write(Stream::CARRIAGE_RETURN, $streamName);
 	}
 
-	public function clearLine(string $streamName = Stream::OUT):void {
+	public function clearLine(StreamName $streamName = StreamName::OUT):void {
 		$this->stream->write(Stream::ANSI_ESCAPE . "2K", $streamName);
 	}
 }

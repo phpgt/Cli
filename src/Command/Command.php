@@ -15,6 +15,7 @@ use GT\Cli\Parameter\UserParameter;
 use GT\Cli\Palette;
 use GT\Cli\ProgressBar;
 use GT\Cli\Stream;
+use GT\Cli\StreamName;
 
 /** @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -176,7 +177,7 @@ abstract class Command {
 
 	protected function write(
 		string $message,
-		string $streamName = Stream::OUT
+		StreamName $streamName = StreamName::OUT
 	):void {
 		if(!isset($this->stream)) {
 			return;
@@ -189,7 +190,7 @@ abstract class Command {
 		string $message,
 		?Palette $foreground = null,
 		?Palette $background = null,
-		string $streamName = Stream::OUT
+		StreamName $streamName = StreamName::OUT
 	):void {
 		if(!isset($this->stream)) {
 			return;
@@ -226,7 +227,7 @@ abstract class Command {
 		int $max = 100,
 		string $label = "Progress",
 		int $width = 40,
-		string $streamName = Stream::OUT
+		StreamName $streamName = StreamName::OUT
 	):ProgressBar {
 		if(!isset($this->stream)) {
 			$this->stream = new Stream();
@@ -242,7 +243,7 @@ abstract class Command {
 	}
 
 	protected function saveCursorPosition(
-		string $streamName = Stream::OUT
+		StreamName $streamName = StreamName::OUT
 	):void {
 		if(!isset($this->stream)) {
 			return;
@@ -252,7 +253,7 @@ abstract class Command {
 	}
 
 	protected function restoreCursorPosition(
-		string $streamName = Stream::OUT
+		StreamName $streamName = StreamName::OUT
 	):void {
 		if(!isset($this->stream)) {
 			return;
@@ -263,7 +264,7 @@ abstract class Command {
 
 	protected function moveCursorUp(
 		int $amount = 1,
-		string $streamName = Stream::OUT
+		StreamName $streamName = StreamName::OUT
 	):void {
 		if(!isset($this->stream)) {
 			return;
@@ -274,7 +275,7 @@ abstract class Command {
 
 	protected function moveCursorDown(
 		int $amount = 1,
-		string $streamName = Stream::OUT
+		StreamName $streamName = StreamName::OUT
 	):void {
 		if(!isset($this->stream)) {
 			return;
@@ -285,7 +286,7 @@ abstract class Command {
 
 	protected function moveCursorForward(
 		int $amount = 1,
-		string $streamName = Stream::OUT
+		StreamName $streamName = StreamName::OUT
 	):void {
 		if(!isset($this->stream)) {
 			return;
@@ -296,7 +297,7 @@ abstract class Command {
 
 	protected function moveCursorBack(
 		int $amount = 1,
-		string $streamName = Stream::OUT
+		StreamName $streamName = StreamName::OUT
 	):void {
 		if(!isset($this->stream)) {
 			return;
@@ -307,7 +308,7 @@ abstract class Command {
 
 	protected function setCursorColumn(
 		int $column = 1,
-		string $streamName = Stream::OUT
+		StreamName $streamName = StreamName::OUT
 	):void {
 		if(!isset($this->stream)) {
 			return;
@@ -317,7 +318,7 @@ abstract class Command {
 	}
 
 	protected function rewindCursor(
-		string $streamName = Stream::OUT
+		StreamName $streamName = StreamName::OUT
 	):void {
 		if(!isset($this->stream)) {
 			return;
@@ -326,7 +327,7 @@ abstract class Command {
 		$this->stream->cursor->rewind($streamName);
 	}
 
-	protected function clearLine(string $streamName = Stream::OUT):void {
+	protected function clearLine(StreamName $streamName = StreamName::OUT):void {
 		if(!isset($this->stream)) {
 			return;
 		}
@@ -336,7 +337,7 @@ abstract class Command {
 
 	protected function writeLine(
 		string $message = "",
-		string $streamName = Stream::OUT
+		StreamName $streamName = StreamName::OUT
 	):void {
 		$this->write($message . PHP_EOL, $streamName);
 	}
