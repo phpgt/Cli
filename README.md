@@ -71,7 +71,7 @@ class TweetCommand extends Command {
 
 	public function run(?ArgumentValueList $arguments = null):int {
 		if(!TwitterApi::isLoggedIn()) {
-			$this->writeLine("You must login first.", Stream::ERROR);
+			$this->writeLine("You must login first.", StreamName::ERROR);
 			return 1;
 		}
 		
@@ -83,7 +83,7 @@ class TweetCommand extends Command {
 				$this->writeLine(
 					"Error sending Tweet: "
 					. $exception->getMessage(),
-					Stream::ERROR
+					StreamName::ERROR
 				);
 				return 2;
 			}

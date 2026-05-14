@@ -71,7 +71,7 @@ class Application {
 		if(is_null($this->arguments)) {
 			$this->stream->writeLine(
 				"Application has received no commands",
-				Stream::ERROR
+				StreamName::ERROR
 			);
 
 			$this->exitCode = 2;
@@ -118,20 +118,20 @@ class Application {
 
 			$this->stream->writeLine(
 				$message,
-				Stream::ERROR
+				StreamName::ERROR
 			);
 		}
 		catch(CliException $exception) {
 			$this->stream->writeLine(
 				$exception->getMessage(),
-				Stream::ERROR
+				StreamName::ERROR
 			);
 		}
 
 		if($exception && $command) {
 			$this->stream->writeLine(
 				$command->getUsage(),
-				Stream::ERROR
+				StreamName::ERROR
 			);
 		}
 
