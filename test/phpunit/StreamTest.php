@@ -1,9 +1,9 @@
 <?php
 namespace GT\Cli\Test;
 
-use GT\Cli\InvalidStreamNameException;
 use GT\Cli\Palette;
 use GT\Cli\Stream;
+use GT\Cli\StreamName;
 use PHPUnit\Framework\TestCase;
 
 class StreamTest extends TestCase {
@@ -89,7 +89,7 @@ class StreamTest extends TestCase {
 		$out = $stream->getOutStream();
 		$err = $stream->getErrorStream();
 
-		$stream->write("this should go to error", Stream::ERROR);
+		$stream->write("this should go to error", StreamName::ERROR);
 		$out->rewind();
 		$err->rewind();
 		self::assertEmpty($out->fread(1024));
@@ -104,19 +104,29 @@ class StreamTest extends TestCase {
 		);
 		$in = $stream->getInStream();
 
-		$stream->write("can't write to stdin", Stream::IN);
+		$stream->write("can't write to stdin", StreamName::IN);
 		$in->rewind();
 		self::assertEmpty($in->fread(1024));
 	}
 
-	public function testInvalidStreamName() {
+	public function testWriteRequiresStreamNameEnum():void {
 		$stream = new Stream(
 			"php://memory",
 			"php://memory",
 			"php://memory"
 		);
-		$this->expectException(InvalidStreamNameException::class);
+		$this->expectException(\TypeError::class);
 		$stream->write("this does not exist", "nothing");
+	}
+
+	public function testWriteLineRequiresStreamNameEnum():void {
+		$stream = new Stream(
+			"php://memory",
+			"php://memory",
+			"php://memory"
+		);
+		$this->expectException(\TypeError::class);
+		$stream->writeLine("this does not exist", "nothing");
 	}
 
 	public function testRepeatingLineSuppressed():void {
@@ -169,7 +179,7 @@ class StreamTest extends TestCase {
 			"php://memory"
 		);
 		$out = $stream->getOutStream();
-		$stream->writeLine("test", Stream::OUT, Palette::GREEN);
+		$stream->writeLine("test", StreamName::OUT, Palette::GREEN);
 		$out->rewind();
 		self::assertMatchesRegularExpression(
 			"/^\e\\[32mtest\r?\n\e\\[0m$/",
