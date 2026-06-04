@@ -123,12 +123,26 @@ class Stream {
 		?Palette $foreground = null,
 		?Palette $background = null,
 	):void {
-		$this->lineBuffer[$streamName->value] ??= "";
-		$this->lineBuffer[$streamName->value] .= $message;
+		$bufferKey = $streamName->value;
+		$this->lineBuffer[$bufferKey] ??= "";
+		$this->lineBuffer[$bufferKey] .= $message;
 
-		while(($newlinePos = strpos($this->lineBuffer[$streamName->value], "\n")) !== false) {
-			$line = substr($this->lineBuffer[$streamName->value], 0, $newlinePos + 1);
-			$this->lineBuffer[$streamName->value] = substr($this->lineBuffer[$streamName->value], $newlinePos + 1);
+		while(true) {
+			$newlinePos = strpos($this->lineBuffer[$bufferKey], "\n");
+			if($newlinePos === false) {
+				break;
+			}
+
+			$line = substr(
+				$this->lineBuffer[$bufferKey],
+				0,
+				$newlinePos + 1,
+			);
+			$remainingBufferOffset = $newlinePos + 1;
+			$this->lineBuffer[$bufferKey] = substr(
+				$this->lineBuffer[$bufferKey],
+				$remainingBufferOffset,
+			);
 			$this->writeCompleteLine(
 				$line,
 				$streamName,
