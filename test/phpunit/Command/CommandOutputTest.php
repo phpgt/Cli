@@ -22,7 +22,7 @@ class CommandOutputTest extends ArgumentMockTestCase {
 			StreamName::OUT->value => [],
 			StreamName::ERROR->value => [],
 		];
-		$stream->method("write")
+		$stream->method("writeLine")
 			->willReturnCallback(function(
 				string $message,
 				StreamName $streamName
@@ -58,6 +58,24 @@ class CommandOutputTest extends ArgumentMockTestCase {
 		};
 		$command->setStream($stream);
 		$command->outputPublic("single green message", Palette::GREEN);
+	}
+
+	public function testWriteLineUsesStreamWriteLine():void {
+		$stream = $this->createMock(Stream::class);
+		$stream->expects(self::once())
+			->method("writeLine")
+			->with(
+				"line output",
+				StreamName::OUT
+			);
+
+		$command = new class extends TestCommand {
+			public function writeLinePublic(string $message):void {
+				$this->writeLine($message);
+			}
+		};
+		$command->setStream($stream);
+		$command->writeLinePublic("line output");
 	}
 
 	public function testSetAndResetOutputPalette():void {
