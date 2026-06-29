@@ -172,6 +172,42 @@ class StreamTest extends TestCase {
 		self::assertSame(4, substr_count($fullStreamContents, Stream::REPEAT_CHAR));
 	}
 
+	public function testBufferedRepeatingLinesSuppressed():void {
+		$stream = new Stream(
+			"php://memory",
+			"php://memory",
+			"php://memory",
+		);
+		$out = $stream->getOutStream();
+
+		$stream->writeBufferedLines("repeat");
+		$stream->writeBufferedLines(" me\nrepeat me\n");
+		$stream->writeBufferedLines("repeat me\nunique\n");
+
+		$out->rewind();
+		self::assertSame(
+			"repeat me\n" . Stream::REPEAT_CHAR . Stream::REPEAT_CHAR . "\nunique\n",
+			$out->fread(1024)
+		);
+	}
+
+	public function testBufferedWritesHoldPartialLinesUntilNewline():void {
+		$stream = new Stream(
+			"php://memory",
+			"php://memory",
+			"php://memory",
+		);
+		$out = $stream->getOutStream();
+
+		$stream->writeBufferedLines("partial");
+		$out->rewind();
+		self::assertSame("", $out->fread(1024));
+
+		$stream->writeBufferedLines(" line\n");
+		$out->rewind();
+		self::assertSame("partial line\n", $out->fread(1024));
+	}
+
 	public function testWriteLineWithTemporaryPalette() {
 		$stream = new Stream(
 			"php://memory",

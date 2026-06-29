@@ -18,6 +18,8 @@ class Stream {
 
 	protected string $lastLineBuffer;
 	private bool $lastLineRepeats;
+	/** @var array<string, string> */
+	private array $lineBuffer;
 	public Cursor $cursor;
 
 	public function __construct(
@@ -39,6 +41,7 @@ class Stream {
 		$this->setStream($in, $out, $error);
 		$this->lastLineBuffer = "";
 		$this->lastLineRepeats = false;
+		$this->lineBuffer = [];
 	}
 
 	public function setStream(string $in, string $out, string $error):void {
@@ -106,32 +109,47 @@ class Stream {
 		?Palette $foreground = null,
 		?Palette $background = null,
 	):void {
-		$line = $message . PHP_EOL;
+		$this->writeCompleteLine(
+			$message . PHP_EOL,
+			$streamName,
+			$foreground,
+			$background,
+		);
+	}
 
-		if($line === $this->lastLineBuffer) {
-			$this->write(
-				self::REPEAT_CHAR,
-				$streamName,
-				$foreground,
-				$background
-			);
-			$this->lastLineRepeats = true;
-		}
-		else {
-			if($this->lastLineRepeats) {
-				$this->write(PHP_EOL, $streamName);
+	public function writeBufferedLines(
+		string $message,
+		StreamName $streamName = StreamName::OUT,
+		?Palette $foreground = null,
+		?Palette $background = null,
+	):void {
+		$bufferKey = $streamName->value;
+		$this->lineBuffer[$bufferKey] ??= "";
+		$this->lineBuffer[$bufferKey] .= $message;
+
+		while(true) {
+			$newlinePos = strpos($this->lineBuffer[$bufferKey], "\n");
+			if($newlinePos === false) {
+				break;
 			}
 
-			$this->write(
+			$line = substr(
+				$this->lineBuffer[$bufferKey],
+				0,
+				$newlinePos + 1,
+			);
+			$remainingBufferOffset = $newlinePos + 1;
+			$this->lineBuffer[$bufferKey] = substr(
+				$this->lineBuffer[$bufferKey],
+				$remainingBufferOffset,
+			);
+			$this->writeCompleteLine(
 				$line,
 				$streamName,
 				$foreground,
-				$background
+				$background,
 			);
-			$this->lastLineRepeats = false;
 		}
-
-		$this->lastLineBuffer = $line;
 	}
 
 	public function setOutputPalette(
@@ -180,5 +198,37 @@ class Stream {
 			. "m"
 			. $message
 			. self::ANSI_RESET;
+	}
+
+	private function writeCompleteLine(
+		string $line,
+		StreamName $streamName,
+		?Palette $foreground = null,
+		?Palette $background = null,
+	):void {
+		if($line === $this->lastLineBuffer) {
+			$this->write(
+				self::REPEAT_CHAR,
+				$streamName,
+				$foreground,
+				$background
+			);
+			$this->lastLineRepeats = true;
+		}
+		else {
+			if($this->lastLineRepeats) {
+				$this->write(PHP_EOL, $streamName);
+			}
+
+			$this->write(
+				$line,
+				$streamName,
+				$foreground,
+				$background
+			);
+			$this->lastLineRepeats = false;
+		}
+
+		$this->lastLineBuffer = $line;
 	}
 }

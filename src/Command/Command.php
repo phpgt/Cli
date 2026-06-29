@@ -339,7 +339,11 @@ abstract class Command {
 		string $message = "",
 		StreamName $streamName = StreamName::OUT
 	):void {
-		$this->write($message . PHP_EOL, $streamName);
+		if(!isset($this->stream)) {
+			return;
+		}
+
+		$this->stream->writeLine($message, $streamName);
 	}
 
 	protected function readLine(?string $default = null):string {
