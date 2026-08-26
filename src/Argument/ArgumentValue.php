@@ -31,6 +31,22 @@ class ArgumentValue {
 		return $value;
 	}
 
+	public function getString():string {
+		return (string)$this->get();
+	}
+
+	public function getInt():int {
+		return (int)$this->get();
+	}
+
+	public function getFloat():float {
+		return (float)$this->get();
+	}
+
+	public function getBool():bool {
+		return (bool)$this->get();
+	}
+
 	/** @return string[] */
 	public function getAll():array {
 		return $this->valueList;
