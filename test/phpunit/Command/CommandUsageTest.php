@@ -65,6 +65,7 @@ class CommandUsageTest extends ArgumentMockTestCase {
 		$frameworkArgument->method("getKey")->willReturn("framework");
 		$frameworkArgument->method("getValue")->willReturn("test-scaffolding");
 		$exampleArgument = self::createMock(LongOptionArgument::class);
+		$exampleArgument->method("getKey")->willReturn("example");
 		$exampleArgument->method("getValue")
 			->willReturn("just-a-quick-example");
 

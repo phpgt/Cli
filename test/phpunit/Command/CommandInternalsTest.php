@@ -1,8 +1,6 @@
 <?php
 namespace GT\Cli\Test\Command;
 
-use GT\Cli\Argument\Argument;
-use GT\Cli\Argument\ArgumentList;
 use GT\Cli\Argument\ArgumentValueList;
 use GT\Cli\Command\Command;
 use GT\Cli\Parameter\NamedParameter;
@@ -78,40 +76,6 @@ class CommandInternalsTest extends TestCase {
 
 		$progressBar = $command->createProgressBarPublic();
 		self::assertInstanceOf(ProgressBar::class, $progressBar);
-	}
-
-	public function testGetArgumentValueListIncludesUserAndUnknownOptions():void {
-		$command = new TestCommand();
-		$arguments = new ArgumentList(
-			"script",
-			"test",
-			"id-value",
-			"option-value",
-			"user-extra",
-			"--must-have-value",
-			"required",
-			"--custom",
-			"custom-value",
-			"-n"
-		);
-
-		$argumentValueList = $command->getArgumentValueList($arguments);
-
-		self::assertSame("id-value", (string)$argumentValueList->get("id"));
-		self::assertSame(
-			"option-value",
-			(string)$argumentValueList->get("option")
-		);
-		self::assertSame(
-			"required",
-			(string)$argumentValueList->get("must-have-value")
-		);
-		self::assertSame("custom-value", (string)$argumentValueList->get("custom"));
-		self::assertSame(
-			"user-extra",
-			(string)$argumentValueList->get(Argument::USER_DATA)
-		);
-		self::assertTrue($argumentValueList->contains("no-value"));
 	}
 
 	public function testGetUsageWithDocumentation():void {

@@ -14,6 +14,7 @@ use GT\Cli\StreamName;
 use GT\Cli\Test\Helper\ArgumentMockTestCase;
 use GT\Cli\Test\Helper\Command\TestCommand;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\Attributes\DataProvider;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
@@ -434,6 +435,64 @@ class ApplicationTest extends ArgumentMockTestCase {
 			"Error - Missing required parameter: Error: required (r)",
 			StreamName::ERROR
 		);
+	}
+
+	#[DataProvider("unknownOptionProvider")]
+	public function testRun_unknownOption(
+		string $option,
+		string $reportedOption
+	):void {
+		$command = new TestCommand();
+		$arguments = new ArgumentList(
+			"script", "test", "id", "--must-have-value=required", $option
+		);
+		$application = new Application("test-app", $arguments, $command);
+		$application->setStream($this->inPath, $this->outPath, $this->errPath);
+		$exitCode = null;
+		$application->setExitHandler(function(int $code) use(&$exitCode) {
+			$exitCode = $code;
+		});
+		$application->run();
+
+		self::assertSame(1, $exitCode);
+		self::assertStreamContains(
+			"Error: Invalid argument supplied: \"$reportedOption\"",
+			StreamName::ERROR
+		);
+		self::assertStreamContains($command->getUsage(), StreamName::ERROR);
+		self::assertStreamEmpty(StreamName::OUT);
+	}
+
+	public static function unknownOptionProvider():array {
+		return [
+			"long" => ["--unknown", "--unknown"],
+			"long with value" => ["--unknown=value", "--unknown"],
+			"short" => ["-x", "-x"],
+			"chained" => ["-nx", "-x"],
+		];
+	}
+
+	#[DataProvider("builtInOptionProvider")]
+	public function testRun_builtInOptionBypassesRequiredArguments(string $option):void {
+		$arguments = new ArgumentList("script", "test", $option);
+		$application = new Application("test-app", $arguments, new TestCommand());
+		$application->setStream($this->inPath, $this->outPath, $this->errPath);
+		$exitCode = null;
+		$application->setExitHandler(function(int $code) use(&$exitCode) {
+			$exitCode = $code;
+		});
+		$application->run();
+
+		self::assertSame(0, $exitCode);
+		self::assertStreamEmpty(StreamName::ERROR);
+		self::assertStringNotContainsString(
+			"Command running successfully",
+			(string)file_get_contents($this->outPath)
+		);
+	}
+
+	public static function builtInOptionProvider():array {
+		return [["--help"], ["--version"]];
 	}
 
 	protected function assertStreamContains(
