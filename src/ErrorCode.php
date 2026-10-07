@@ -3,6 +3,7 @@ namespace GT\Cli;
 
 use Exception;
 use GT\Cli\Argument\NotEnoughArgumentsException;
+use GT\Cli\Argument\InvalidArgumentException;
 use GT\Cli\Command\CommandException;
 use GT\Cli\Command\InvalidCommandException;
 use GT\Cli\Parameter\MissingRequiredParameterException;
@@ -18,6 +19,7 @@ class ErrorCode {
 		InvalidCommandException::class,
 		MissingRequiredParameterValueException::class,
 		MissingRequiredParameterException::class,
+		InvalidArgumentException::class,
 	];
 
 	/** @param string|Exception $exception */
