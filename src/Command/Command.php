@@ -5,13 +5,15 @@ use GT\Cli\Argument\Argument;
 use GT\Cli\Argument\ArgumentList;
 use GT\Cli\Argument\ArgumentValueList;
 use GT\Cli\Argument\CommandArgument;
+use GT\Cli\Argument\InvalidArgumentException;
+use GT\Cli\Argument\LongOptionArgument;
 use GT\Cli\Argument\NamedArgument;
 use GT\Cli\Argument\NotEnoughArgumentsException;
+use GT\Cli\Argument\ShortOptionArgument;
 use GT\Cli\Parameter\MissingRequiredParameterException;
 use GT\Cli\Parameter\MissingRequiredParameterValueException;
 use GT\Cli\Parameter\NamedParameter;
 use GT\Cli\Parameter\Parameter;
-use GT\Cli\Parameter\UserParameter;
 use GT\Cli\Palette;
 use GT\Cli\ProgressBar;
 use GT\Cli\Stream;
@@ -99,6 +101,8 @@ abstract class Command {
 				}
 			}
 		}
+
+		$this->checkOptionArguments($argumentList);
 	}
 
 	/** @SuppressWarnings(PHPMD.CyclomaticComplexity) */
@@ -113,10 +117,7 @@ abstract class Command {
 		);
 
 		/** @var Parameter[] $parameterList */
-		$parameterList = array_merge(
-			$this->getRequiredParameterList(),
-			$this->getOptionalParameterList()
-		);
+		$parameterList = $this->getOptionParameterList();
 
 		$argumentValueList = new ArgumentValueList();
 
@@ -146,24 +147,7 @@ abstract class Command {
 				$namedParameterIndex++;
 			}
 			elseif($argument instanceof Argument) {
-				/** @var Parameter|null $parameter */
-				$parameter = null;
-
-				foreach($parameterList as $parameterToCheck) {
-					$argumentKey = $argument->getKey();
-					if($argumentKey === $parameterToCheck->getLongOption()
-					|| $argumentKey === $parameterToCheck->getShortOption()) {
-						$parameter = $parameterToCheck;
-						break;
-					}
-				}
-
-				if(is_null($parameter)) {
-					$parameter = new UserParameter(
-						!empty($argument->getValue()),
-						$argument->getKey()
-					);
-				}
+				$parameter = $this->getParameterForArgument($argument, $parameterList);
 
 				$argumentValueList->set(
 					$parameter->getLongOption(),
@@ -173,6 +157,44 @@ abstract class Command {
 		}
 
 		return $argumentValueList;
+	}
+
+	private function checkOptionArguments(ArgumentList $argumentList):void {
+		$parameterList = $this->getOptionParameterList();
+		foreach($argumentList as $argument) {
+			if($argument instanceof LongOptionArgument
+			|| $argument instanceof ShortOptionArgument) {
+				$this->getParameterForArgument($argument, $parameterList);
+			}
+		}
+	}
+
+	/** @return Parameter[] */
+	private function getOptionParameterList():array {
+		return array_merge(
+			$this->getRequiredParameterList(),
+			$this->getOptionalParameterList(),
+			[new Parameter(false, "help"), new Parameter(false, "version")]
+		);
+	}
+
+	/** @param Parameter[] $parameterList */
+	private function getParameterForArgument(
+		Argument $argument,
+		array $parameterList
+	):Parameter {
+		$isLongOption = $argument instanceof LongOptionArgument;
+		foreach($parameterList as $parameter) {
+			$option = $isLongOption
+				? $parameter->getLongOption()
+				: $parameter->getShortOption();
+			if($argument->getKey() === $option) {
+				return $parameter;
+			}
+		}
+
+		$prefix = $isLongOption ? "--" : "-";
+		throw new InvalidArgumentException($prefix . $argument->getKey());
 	}
 
 	protected function write(
