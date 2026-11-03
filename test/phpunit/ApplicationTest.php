@@ -88,7 +88,7 @@ class ApplicationTest extends ArgumentMockTestCase {
 		self::assertStreamEmpty(StreamName::OUT);
 	}
 
-	public function testCommandArgumentInvalid() {
+	public function testRun_invalidCommand() {
 		/** @var ArgumentList|MockObject $arguments */
 		$arguments = self::createMock(ArgumentList::class);
 		$arguments->method("getCommandName")
@@ -112,7 +112,7 @@ class ApplicationTest extends ArgumentMockTestCase {
 		);
 	}
 
-	public function testCommandArgumentsInvalid() {
+	public function testRun_invalidArguments() {
 		/** @var MockObject|ArgumentList $arguments */
 		$arguments = self::createMock(ArgumentList::class);
 		$arguments->method("getCommandName")
@@ -141,7 +141,7 @@ class ApplicationTest extends ArgumentMockTestCase {
 		self::assertSame(1, $actualErrCode);
 	}
 
-	public function testCommandRun() {
+	public function testRun() {
 		$idArgument = self::createMock(NamedArgument::class);
 		$idArgument->method("getValue")
 			->willReturn("abcde");
@@ -205,7 +205,7 @@ class ApplicationTest extends ArgumentMockTestCase {
 		);
 	}
 
-	public function testExitCodeNotEnoughArguments() {
+	public function testRun_exitCodeNotEnoughArguments() {
 		$parameter = self::createMock(NamedParameter::class);
 		$argumentsList = self::createMock(ArgumentList::class);
 		$argumentsList->method("getCommandName")
@@ -266,7 +266,7 @@ class ApplicationTest extends ArgumentMockTestCase {
 		);
 	}
 
-	public function testExitCodeReturnedFromCommand():void {
+	public function testRun_exitCodeReturnedFromCommand():void {
 		/** @var ArgumentList|MockObject $arguments */
 		$arguments = self::createArgumentListMock();
 		$arguments->method("getCommandName")
@@ -318,7 +318,7 @@ class ApplicationTest extends ArgumentMockTestCase {
 		self::assertSame(9, $actualExitCode);
 	}
 
-	public function testExitCodeReturnedFromHelpFlag():void {
+	public function testRun_exitCodeReturnedFromHelpFlag():void {
 		$helpArgument = self::createMock(LongOptionArgument::class);
 		$helpArgument->method("getKey")->willReturn("help");
 		$helpArgument->method("getValue")->willReturn("");
@@ -349,7 +349,7 @@ class ApplicationTest extends ArgumentMockTestCase {
 		self::assertStreamEmpty(StreamName::ERROR);
 	}
 
-	public function testExitCodeReturnedFromVersionFlag():void {
+	public function testRun_exitCodeReturnedFromVersionFlag():void {
 		$versionArgument = self::createMock(LongOptionArgument::class);
 		$versionArgument->method("getKey")->willReturn("version");
 		$versionArgument->method("getValue")->willReturn("");
@@ -380,7 +380,7 @@ class ApplicationTest extends ArgumentMockTestCase {
 		);
 	}
 
-	public function testMissingRequiredParameterIsReportedByApplication():void {
+	public function testRun_missingRequiredParameter():void {
 		$arguments = new ArgumentList(
 			"script-name",
 			"requires-parameter",

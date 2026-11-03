@@ -8,7 +8,7 @@ use GT\Cli\Test\Helper\Command\TestCommand;
 use PHPUnit\Framework\TestCase;
 
 class HelpCommandTest extends TestCase {
-	public function testPublicMetadataMethods():void {
+	public function testGetName_metadata():void {
 		$command = new HelpCommand("Example app", "cli", [new TestCommand()]);
 		self::assertSame("help", $command->getName());
 		self::assertSame(
@@ -21,7 +21,7 @@ class HelpCommandTest extends TestCase {
 		self::assertCount(1, $command->getOptionalParameterList());
 	}
 
-	public function testRunForAllCommands():void {
+	public function testRun_forAllCommands():void {
 		$stream = new Stream("php://memory", "php://memory", "php://memory");
 		$command = new HelpCommand("Example app", "cli", [new TestCommand()]);
 		$command->setStream($stream);
@@ -37,7 +37,7 @@ class HelpCommandTest extends TestCase {
 		self::assertStringContainsString("help", $output);
 	}
 
-	public function testRunForKnownCommand():void {
+	public function testRun_forKnownCommand():void {
 		$stream = new Stream("php://memory", "php://memory", "php://memory");
 		$command = new HelpCommand("Example app", "cli", [new TestCommand()]);
 		$command->setStream($stream);
@@ -53,7 +53,7 @@ class HelpCommandTest extends TestCase {
 		self::assertStringContainsString("Usage: test id", $output);
 	}
 
-	public function testRunForUnknownCommand():void {
+	public function testRun_forUnknownCommand():void {
 		$stream = new Stream("php://memory", "php://memory", "php://memory");
 		$command = new HelpCommand("Example app", "cli", [new TestCommand()]);
 		$command->setStream($stream);
@@ -68,7 +68,7 @@ class HelpCommandTest extends TestCase {
 		self::assertStringContainsString("No help for command `missing`.", $output);
 	}
 
-	public function testRunWithNullArguments():void {
+	public function testRun_withNullArguments():void {
 		$stream = new Stream("php://memory", "php://memory", "php://memory");
 		$command = new HelpCommand("Example app", "cli", [new TestCommand()]);
 		$command->setStream($stream);
@@ -80,7 +80,7 @@ class HelpCommandTest extends TestCase {
 		self::assertStringContainsString("No help for command ``.", $output);
 	}
 
-	public function testRunWithNoCommandsAvailableMessage():void {
+	public function testRun_withNoCommandsAvailableMessage():void {
 		$stream = new Stream("php://memory", "php://memory", "php://memory");
 		$command = new HelpCommand("Example app", "cli");
 		$command->setStream($stream);

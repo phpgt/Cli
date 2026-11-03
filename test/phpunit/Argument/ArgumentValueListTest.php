@@ -9,13 +9,13 @@ use GT\Cli\Argument\NamedArgumentValue;
 use PHPUnit\Framework\TestCase;
 
 class ArgumentValueListTest extends TestCase {
-	public function testGetNotSet() {
+	public function testGet_notSet() {
 		$avl = new ArgumentValueList();
 		$this->expectException(ArgumentValueListNotSetException::class);
 		$avl->get("test");
 	}
 
-	public function testGetSet() {
+	public function testGet_setValue() {
 		$avl = new ArgumentValueList();
 		$avl->set("test", "example-value");
 		self::assertEquals(
@@ -31,13 +31,13 @@ class ArgumentValueListTest extends TestCase {
 		self::assertTrue($avl->contains("test"));
 	}
 
-	public function testGetWithDefaultReturnsDefaultArgumentValue():void {
+	public function testGet_withDefaultReturnsDefaultArgumentValue():void {
 		$avl = new ArgumentValueList();
 		$default = $avl->get("missing", "fallback");
 		self::assertSame("fallback", (string)$default);
 	}
 
-	public function testSetSameKeyQueuesValues():void {
+	public function testSet_sameKeyQueuesValues():void {
 		$avl = new ArgumentValueList();
 		$avl->set("name", "one");
 		$avl->set("name", "two");
@@ -48,7 +48,7 @@ class ArgumentValueListTest extends TestCase {
 		self::assertSame(["one", "two"], $value->getAll());
 	}
 
-	public function testIteratorAndFirst():void {
+	public function testFirst_iteration():void {
 		$avl = new ArgumentValueList();
 		$avl->set("one", "alpha");
 		$avl->set("two", "beta");
@@ -70,7 +70,7 @@ class ArgumentValueListTest extends TestCase {
 		self::assertSame("alpha", (string)$avl->current());
 	}
 
-	public function testSetUserDataCreatesNamedArgumentValue():void {
+	public function testSet_userDataCreatesNamedArgumentValue():void {
 		$avl = new ArgumentValueList();
 		$avl->set(Argument::USER_DATA, "payload");
 		$value = $avl->get(Argument::USER_DATA);

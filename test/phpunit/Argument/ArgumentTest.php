@@ -7,14 +7,14 @@ use GT\Cli\Argument\ShortOptionArgument;
 use PHPUnit\Framework\TestCase;
 
 class ArgumentTest extends TestCase {
-	public function testToStringNamed() {
+	public function test__toString_named() {
 		$value = uniqid();
 		$arg = new NamedArgument($value);
 
 		self::assertEquals($value, (string)$arg);
 	}
 
-	public function testToStringLongOption() {
+	public function test__toString_longOption() {
 		$name = uniqid();
 		$value = uniqid();
 		$arg = new LongOptionArgument("--$name", $value);
@@ -22,7 +22,7 @@ class ArgumentTest extends TestCase {
 		self::assertEquals("$name:$value", (string)$arg);
 	}
 
-	public function testShortOption() {
+	public function testGetKey_shortOption() {
 		$value = uniqid();
 		$arg = new ShortOptionArgument("-d", $value);
 

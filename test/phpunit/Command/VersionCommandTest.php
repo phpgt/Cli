@@ -7,7 +7,7 @@ use GT\Cli\Stream;
 use PHPUnit\Framework\TestCase;
 
 class VersionCommandTest extends TestCase {
-	public function testRunWritesVersionAndReturnsZero():void {
+	public function testRun_writesVersionAndReturnsZero():void {
 		$stream = new Stream("php://memory", "php://memory", "php://memory");
 		$command = new class extends VersionCommand {
 			protected function getVersion():string {
@@ -24,7 +24,7 @@ class VersionCommandTest extends TestCase {
 		self::assertStringContainsString("1.2.3-test", $out->fread(1024));
 	}
 
-	public function testPublicMetadataMethods():void {
+	public function testGetName_metadata():void {
 		$command = new VersionCommand();
 		self::assertSame("version", $command->getName());
 		self::assertSame(
@@ -37,7 +37,7 @@ class VersionCommandTest extends TestCase {
 		self::assertSame([], $command->getOptionalParameterList());
 	}
 
-	public function testGetVersionReturnsString():void {
+	public function testGetVersion_returnsString():void {
 		$command = new class extends VersionCommand {
 			public function exposeVersion():string {
 				return $this->getVersion();

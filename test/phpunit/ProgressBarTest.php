@@ -6,7 +6,7 @@ use GT\Cli\Stream;
 use PHPUnit\Framework\TestCase;
 
 class ProgressBarTest extends TestCase {
-	public function testSetProgressReturnsWhenComplete():void {
+	public function testSetProgress_returnsWhenComplete():void {
 		$stream = new Stream("php://memory", "php://memory", "php://memory");
 		$progressBar = new ProgressBar($stream, 10, "Work", 10);
 		$progressBar->finish();
@@ -15,7 +15,7 @@ class ProgressBarTest extends TestCase {
 		self::assertTrue(true);
 	}
 
-	public function testFinishReturnsWhenAlreadyComplete():void {
+	public function testFinish_returnsWhenAlreadyComplete():void {
 		$stream = new Stream("php://memory", "php://memory", "php://memory");
 		$progressBar = new ProgressBar($stream, 10, "Work", 10);
 		$progressBar->finish("Done");
@@ -24,7 +24,7 @@ class ProgressBarTest extends TestCase {
 		self::assertTrue(true);
 	}
 
-	public function testSetProgressWithLabelAndAdvance():void {
+	public function testSetProgress_withLabelAndAdvance():void {
 		$stream = new Stream("php://memory", "php://memory", "php://memory");
 		$progressBar = new ProgressBar($stream, 10, "Work", 10);
 		$progressBar->setProgress(3, "Step 1");

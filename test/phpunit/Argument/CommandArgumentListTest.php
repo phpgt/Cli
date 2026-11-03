@@ -5,7 +5,7 @@ use GT\Cli\Argument\CommandArgumentList;
 use PHPUnit\Framework\TestCase;
 
 class CommandArgumentListTest extends TestCase {
-	public function testForcedCommandIsFirstArgument():void {
+	public function test__construct_forcedCommandIsFirstArgument():void {
 		$argumentList = new CommandArgumentList(
 			"forced-command",
 			"script-name",

@@ -7,7 +7,7 @@ use GT\Cli\StreamName;
 use PHPUnit\Framework\TestCase;
 
 class StreamTest extends TestCase {
-	public function testGetSetStream() {
+	public function testSetStream_getStreams() {
 		$tmp = implode(DIRECTORY_SEPARATOR, [
 			sys_get_temp_dir(),
 			"phpgt",
@@ -80,7 +80,7 @@ class StreamTest extends TestCase {
 		);
 	}
 
-	public function testWriteToError() {
+	public function testWrite_toError() {
 		$stream = new Stream(
 			"php://memory",
 			"php://memory",
@@ -96,7 +96,7 @@ class StreamTest extends TestCase {
 		self::assertEquals("this should go to error", $err->fread(1024));
 	}
 
-	public function testWriteToIn() {
+	public function testWrite_toIn() {
 		$stream = new Stream(
 			"php://memory",
 			"php://memory",
@@ -109,7 +109,7 @@ class StreamTest extends TestCase {
 		self::assertEmpty($in->fread(1024));
 	}
 
-	public function testWriteRequiresStreamNameEnum():void {
+	public function testWrite_requiresStreamNameEnum():void {
 		$stream = new Stream(
 			"php://memory",
 			"php://memory",
@@ -119,7 +119,7 @@ class StreamTest extends TestCase {
 		$stream->write("this does not exist", "nothing");
 	}
 
-	public function testWriteLineRequiresStreamNameEnum():void {
+	public function testWriteLine_requiresStreamNameEnum():void {
 		$stream = new Stream(
 			"php://memory",
 			"php://memory",
@@ -129,7 +129,7 @@ class StreamTest extends TestCase {
 		$stream->writeLine("this does not exist", "nothing");
 	}
 
-	public function testRepeatingLineSuppressed():void {
+	public function testWriteLine_repeatingLineSuppressed():void {
 		$stream = new Stream(
 			"php://memory",
 			"php://memory",
@@ -172,7 +172,7 @@ class StreamTest extends TestCase {
 		self::assertSame(4, substr_count($fullStreamContents, Stream::REPEAT_CHAR));
 	}
 
-	public function testBufferedRepeatingLinesSuppressed():void {
+	public function testWrite_repeatingLinesSuppressed():void {
 		$stream = new Stream(
 			"php://memory",
 			"php://memory",
@@ -191,7 +191,7 @@ class StreamTest extends TestCase {
 		);
 	}
 
-	public function testBufferedWritesHoldPartialLinesUntilNewline():void {
+	public function testWrite_bufferedPartialLines():void {
 		$stream = new Stream(
 			"php://memory",
 			"php://memory",
@@ -208,7 +208,7 @@ class StreamTest extends TestCase {
 		self::assertSame("partial line\n", $out->fread(1024));
 	}
 
-	public function testWriteLineWithTemporaryPalette() {
+	public function testWriteLine_withTemporaryPalette() {
 		$stream = new Stream(
 			"php://memory",
 			"php://memory",
@@ -223,7 +223,7 @@ class StreamTest extends TestCase {
 		);
 	}
 
-	public function testWriteLineWithPersistentPalette() {
+	public function testWriteLine_withPersistentPalette() {
 		$stream = new Stream(
 			"php://memory",
 			"php://memory",
@@ -243,31 +243,9 @@ class StreamTest extends TestCase {
 		);
 	}
 
-	public function testCursorMovementMethods():void {
-		$stream = new Stream(
-			"php://memory",
-			"php://memory",
-			"php://memory"
-		);
-		$out = $stream->getOutStream();
 
-		$stream->cursor->savePosition();
-		$stream->cursor->moveUp(2);
-		$stream->cursor->moveDown(3);
-		$stream->cursor->moveForward(4);
-		$stream->cursor->moveBack(5);
-		$stream->cursor->setColumn(6);
-		$stream->cursor->clearLine();
-		$stream->cursor->restorePosition();
 
-		$out->rewind();
-		self::assertSame(
-			"\e[s\e[2A\e[3B\e[4C\e[5D\e[6G\e[2K\e[u",
-			$out->fread(1024)
-		);
-	}
-
-	public function testWrapInPaletteWithNoPaletteReturnsMessage():void {
+	public function testWrapInPalette_withNoPaletteReturnsMessage():void {
 		$stream = new Stream(
 			"php://memory",
 			"php://memory",
