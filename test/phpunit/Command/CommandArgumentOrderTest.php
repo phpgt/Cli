@@ -3,6 +3,7 @@ namespace GT\Cli\Test\Command;
 
 use GT\Cli\Argument\ArgumentList;
 use GT\Cli\Argument\CommandArgumentList;
+use GT\Cli\Parameter\Parameter;
 use GT\Cli\Test\Helper\Command\AllParameterTypesCommand;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -35,6 +36,12 @@ class CommandArgumentOrderTest extends TestCase {
 			"long options between positionals" => [[
 				"source", "--type", "*", "--verbose", "destination",
 			]],
+			"chained flag and value option before positionals" => [[
+				"-vt", "*", "source", "destination",
+			]],
+			"inline value before positionals" => [[
+				"--type=*", "--verbose", "source", "destination",
+			]],
 			"short options after positionals" => [[
 				"source", "destination", "-t", "*", "-v",
 			]],
@@ -45,6 +52,28 @@ class CommandArgumentOrderTest extends TestCase {
 				"source", "-t", "*", "-v", "destination",
 			]],
 		];
+	}
+
+	public function testChainedFlagsDoNotConsumeFollowingPositional():void {
+		$command = new class extends AllParameterTypesCommand {
+			public function getOptionalParameterList():array {
+				return array_merge(
+					parent::getOptionalParameterList(),
+					[new Parameter(false, "quiet", "q")]
+				);
+			}
+		};
+		$arguments = new ArgumentList(
+			"script", $command->getName(), "--type", "*", "-qv", "source", "destination"
+		);
+
+		$command->checkArguments($arguments);
+		$values = $command->getArgumentValueList($arguments);
+
+		self::assertSame("source", (string)$values->get("id"));
+		self::assertSame("destination", (string)$values->get("name"));
+		self::assertNull($values->get("quiet")->get());
+		self::assertNull($values->get("verbose")->get());
 	}
 
 	public function testFlagBeforeRequiredPositionalPassesValidation():void {

@@ -1,7 +1,23 @@
 <?php
 namespace GT\Cli\Argument;
 
+use GT\Cli\Parameter\Parameter;
+
 class ArgumentParser {
+	/** @var array<string, bool> */
+	private array $optionTakesValue = [];
+
+	/** @param Parameter[] $parameters */
+	public function __construct(array $parameters = []) {
+		foreach($parameters as $parameter) {
+			$this->optionTakesValue["--" . $parameter->getLongOption()] =
+				$parameter->takesValue();
+			if($shortOption = $parameter->getShortOption()) {
+				$this->optionTakesValue["-" . $shortOption] = $parameter->takesValue();
+			}
+		}
+	}
+
 	/**
 	 * @param string[] $arguments
 	 * @return Argument[]
@@ -97,7 +113,8 @@ class ArgumentParser {
 		}
 
 		$nextArgument = $arguments[$argumentIndex + 1] ?? null;
-		$nextIsValue = $this->isNextArgumentValue($nextArgument);
+		$nextIsValue = ($this->optionTakesValue[$arg] ?? true)
+			&& $this->isNextArgumentValue($nextArgument);
 		$value = $nextIsValue ? $nextArgument : null;
 
 		return [$arg, $value, $nextIsValue];
@@ -118,7 +135,9 @@ class ArgumentParser {
 		$lastIndex = count($shortOptionCharList) - 1;
 		$lastValue = null;
 		$nextArgument = $arguments[$argumentIndex + 1] ?? null;
-		$nextIsValue = $this->isNextArgumentValue($nextArgument);
+		$lastOption = "-" . $shortOptionCharList[$lastIndex];
+		$nextIsValue = ($this->optionTakesValue[$lastOption] ?? true)
+			&& $this->isNextArgumentValue($nextArgument);
 
 		if($nextIsValue) {
 			$lastValue = $nextArgument;

@@ -10,12 +10,15 @@ class ArgumentList implements Iterator {
 	const DEFAULT_COMMAND = "help";
 
 	protected string $script;
+	/** @var string[] */
+	protected array $rawArguments = [];
 	/** @var Argument[] */
 	protected array $argumentList = [];
 	protected int $iteratorIndex;
 
 	public function __construct(string $script, string...$arguments) {
 		$this->script = $script;
+		$this->rawArguments = $arguments;
 		$this->parseArguments($arguments);
 	}
 
@@ -31,6 +34,13 @@ class ArgumentList implements Iterator {
 	protected function parseArguments(array $arguments):void {
 		$parser = new ArgumentParser();
 		$this->argumentList = $parser->parse($arguments);
+	}
+
+	/** @param Parameter[] $parameters */
+	public function bindParameters(array $parameters):void {
+		$parser = new ArgumentParser($parameters);
+		$this->argumentList = $parser->parse($this->rawArguments);
+		$this->rewind();
 	}
 
 	/**
