@@ -65,6 +65,7 @@ abstract class Command {
 	}
 
 	public function checkArguments(ArgumentList $argumentList):void {
+		$argumentList->bindParameters($this->getOptionParameterList());
 		$numRequiredNamedParameters = count(
 			$this->getRequiredNamedParameterList()
 		);
@@ -109,6 +110,7 @@ abstract class Command {
 	public function getArgumentValueList(
 		ArgumentList $arguments
 	):ArgumentValueList {
+		$arguments->bindParameters($this->getOptionParameterList());
 		$namedParameterIndex = 0;
 		/** @var NamedParameter[] */
 		$namedParameterList = array_merge(

@@ -93,6 +93,10 @@ class TweetCommand extends Command {
 }
 ```
 
+## Argument order
+
+Options may appear before, after, or between positional arguments. Positional arguments retain their relative order. Options declared with `takesValue` set to `false` are flags and do not consume the following argument. Quote wildcard values such as `'*'` to prevent shell expansion.
+
 ## Coloured output
 
 Within a `Command`, output can be coloured consistently using the palette API:
